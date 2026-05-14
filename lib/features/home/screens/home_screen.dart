@@ -1,3 +1,4 @@
+import 'package:fixa/core/constants/app_style.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -185,11 +186,7 @@ class _HomeScreenState extends State<HomeScreen>
         Expanded(
           child: Text(
             title,
-            style: GoogleFonts.poppins(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
-            ),
+            style: appStyle(16, AppColors.textPrimary, FontWeight.w600),
           ),
         ),
         ?trailing,
@@ -280,11 +277,7 @@ class _LocationChip extends StatelessWidget {
           const SizedBox(width: 6),
           Text(
             AppStrings.location,
-            style: GoogleFonts.poppins(
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-              color: Colors.white,
-            ),
+            style: appStyle(12, Colors.white, FontWeight.w500),
           ),
           const SizedBox(width: 6),
           Icon(
