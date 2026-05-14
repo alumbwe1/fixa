@@ -1,11 +1,10 @@
-import 'package:fixa/core/constants/app_style.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/constants/dummy_data.dart';
+import '../../../core/utils/app_style.dart';
 import '../../../core/utils/helpers.dart';
 import '../../../widgets/cards/mechanic_card.dart';
 import '../../../widgets/cards/service_card.dart';
@@ -63,9 +62,8 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, dynamic>> nearby = DummyData.mechanics
-        .take(2)
-        .toList();
+    final List<Map<String, dynamic>> nearby =
+        DummyData.mechanics.take(2).toList();
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -74,48 +72,60 @@ class _HomeScreenState extends State<HomeScreen>
         opacity: _slideController,
         child: SlideTransition(
           position: _slide,
-          child: CustomScrollView(
-            slivers: <Widget>[
-              SliverToBoxAdapter(child: _buildHeader(context)),
-              SliverPadding(
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
-                sliver: SliverList(
-                  delegate: SliverChildListDelegate(<Widget>[
-                    _sectionHeader(AppStrings.services),
-                    const SizedBox(height: 12),
-                    _buildServicesGrid(),
-                    const SizedBox(height: 24),
-                    _sectionHeader(
-                      AppStrings.nearbyMechanics,
-                      trailing: TextButton(
-                        onPressed: () => context.push('/mechanics'),
-                        style: TextButton.styleFrom(
-                          foregroundColor: AppColors.primary,
-                          textStyle: GoogleFonts.poppins(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        child: const Text(AppStrings.seeAll),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    ...nearby.map((Map<String, dynamic> m) {
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: MechanicCard(
-                          mechanic: m,
-                          onRequest: () => context.push('/request/${m['id']}'),
-                          onViewProfile: () =>
-                              context.push('/mechanic/${m['id']}'),
-                        ),
-                      );
-                    }),
-                    const SizedBox(height: 8),
-                  ]),
+          child: SafeArea(
+            bottom: false,
+            child: CustomScrollView(
+              slivers: <Widget>[
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+                  sliver: SliverToBoxAdapter(child: _buildHeader(context)),
                 ),
-              ),
-            ],
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+                  sliver: SliverToBoxAdapter(child: _buildSearchBar()),
+                ),
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
+                  sliver: SliverList(
+                    delegate: SliverChildListDelegate(<Widget>[
+                      _sectionHeader(AppStrings.services),
+                      const SizedBox(height: 12),
+                      _buildServicesGrid(),
+                      const SizedBox(height: 24),
+                      _sectionHeader(
+                        AppStrings.nearbyMechanics,
+                        trailing: TextButton(
+                          onPressed: () => context.push('/mechanics'),
+                          style: TextButton.styleFrom(
+                            foregroundColor: AppColors.primary,
+                            textStyle: appStyle(
+                              13,
+                              AppColors.primary,
+                              FontWeight.w600,
+                            ),
+                          ),
+                          child: const Text(AppStrings.seeAll),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      ...nearby.map((Map<String, dynamic> m) {
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: MechanicCard(
+                            mechanic: m,
+                            onRequest: () =>
+                                context.push('/request/${m['id']}'),
+                            onViewProfile: () =>
+                                context.push('/mechanic/${m['id']}'),
+                          ),
+                        );
+                      }),
+                      const SizedBox(height: 8),
+                    ]),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -123,60 +133,40 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Widget _buildHeader(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        color: AppColors.dark,
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(28),
-          bottomRight: Radius.circular(28),
+    return Row(
+      children: <Widget>[
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text(
+                'Hello there 👋',
+                style:
+                    appStyle(12, AppColors.textSecondary, FontWeight.w400),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                AppStrings.greeting,
+                style: appStyle(20, AppColors.textPrimary, FontWeight.w600),
+              ),
+              const SizedBox(height: 10),
+              const _LocationChip(),
+            ],
+          ),
         ),
-      ),
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 22),
-      child: SafeArea(
-        bottom: false,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Row(
-              children: <Widget>[
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        'Hello there 👋',
-                        style: GoogleFonts.poppins(
-                          fontSize: 12,
-                          color: Colors.white.withValues(alpha: 0.65),
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        AppStrings.greeting,
-                        style: GoogleFonts.poppins(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                _Avatar(),
-              ],
-            ),
-            const SizedBox(height: 16),
-            _LocationChip(),
-            const SizedBox(height: 16),
-            CustomTextField(
-              hint: AppStrings.searchHint,
-              icon: Icons.search_rounded,
-              dark: true,
-              onChanged: (_) {},
-            ),
-          ],
-        ),
-      ),
+        const _Avatar(),
+      ],
+    );
+  }
+
+  Widget _buildSearchBar() {
+    // Independent neutral-coloured search bar — matches the surface tone
+    // of the service cards.
+    return CustomTextField(
+      hint: AppStrings.searchHint,
+      icon: Icons.search_rounded,
+      textInputAction: TextInputAction.search,
+      onChanged: (_) {},
     );
   }
 
@@ -189,7 +179,7 @@ class _HomeScreenState extends State<HomeScreen>
             style: appStyle(16, AppColors.textPrimary, FontWeight.w600),
           ),
         ),
-        ?trailing,
+        if (trailing != null) trailing,
       ],
     );
   }
@@ -207,83 +197,70 @@ class _HomeScreenState extends State<HomeScreen>
       ),
       itemBuilder: (BuildContext context, int index) {
         final Map<String, dynamic> service = DummyData.services[index];
-        final IconData icon = _iconForKey(service['key'] as String);
         return ServiceCard(
           title: service['title'] as String,
-          icon: icon,
+          asset: service['asset'] as String,
           color: Color(service['bgColor'] as int),
-          iconColor: Color(service['iconColor'] as int),
           isHighlighted: service['highlighted'] as bool,
           onTap: () => _handleService(service['key'] as String),
         );
       },
     );
   }
-
-  IconData _iconForKey(String key) {
-    switch (key) {
-      case 'mechanic':
-        return Icons.build_outlined;
-      case 'garage':
-        return Icons.store_mall_directory_outlined;
-      case 'towing':
-        return Icons.local_shipping_outlined;
-      case 'book':
-        return Icons.event_note_outlined;
-      default:
-        return Icons.build_outlined;
-    }
-  }
 }
 
 class _Avatar extends StatelessWidget {
+  const _Avatar();
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 44,
-      height: 44,
+      width: 48,
+      height: 48,
       decoration: BoxDecoration(
-        color: AppColors.primary.withValues(alpha: 0.18),
+        color: AppColors.primary.withValues(alpha: 0.15),
         shape: BoxShape.circle,
         border: Border.all(color: AppColors.primary, width: 1.5),
       ),
       alignment: Alignment.center,
       child: Text(
         'A',
-        style: GoogleFonts.poppins(
-          fontSize: 16,
-          fontWeight: FontWeight.w700,
-          color: AppColors.primary,
-        ),
+        style: appStyle(18, AppColors.primary, FontWeight.w700),
       ),
     );
   }
 }
 
 class _LocationChip extends StatelessWidget {
+  const _LocationChip();
+
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.08),
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
+        border: Border.all(color: AppColors.divider),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          const Icon(Icons.place_rounded, size: 16, color: AppColors.primary),
+          const Icon(
+            Icons.place_rounded,
+            size: 16,
+            color: AppColors.primary,
+          ),
           const SizedBox(width: 6),
           Text(
             AppStrings.location,
-            style: appStyle(12, Colors.white, FontWeight.w500),
+            style: appStyle(12, AppColors.textPrimary, FontWeight.w500),
           ),
-          const SizedBox(width: 6),
+          const SizedBox(width: 4),
           Icon(
             Icons.keyboard_arrow_down_rounded,
             size: 16,
-            color: Colors.white.withValues(alpha: 0.7),
+            color: Colors.grey.shade600,
           ),
         ],
       ),

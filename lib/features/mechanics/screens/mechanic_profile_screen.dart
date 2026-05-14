@@ -1,13 +1,13 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/dummy_data.dart';
+import '../../../core/utils/app_style.dart';
 import '../../../core/utils/helpers.dart';
 import '../../../widgets/buttons/outlined_button.dart';
 import '../../../widgets/buttons/primary_button.dart';
-import '../../../widgets/common/app_bar.dart';
 
 class MechanicProfileScreen extends StatelessWidget {
   const MechanicProfileScreen({super.key, required this.mechanicId});
@@ -20,197 +20,310 @@ class MechanicProfileScreen extends StatelessWidget {
       (Map<String, dynamic> e) => (e['id'] as String) == mechanicId,
       orElse: () => DummyData.mechanics.first,
     );
-    final Color accent = Color(m['color'] as int);
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: const FixaAppBar(title: 'Profile'),
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
-        children: <Widget>[
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: AppColors.surface,
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: <BoxShadow>[
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.04),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Column(
-              children: <Widget>[
-                Container(
-                  width: 84,
-                  height: 84,
-                  decoration: BoxDecoration(
-                    color: accent.withValues(alpha: 0.18),
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: accent.withValues(alpha: 0.4),
-                      width: 2,
-                    ),
-                  ),
-                  alignment: Alignment.center,
+      body: CustomScrollView(
+        slivers: <Widget>[
+          _buildHero(context, m),
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+            sliver: SliverList(
+              delegate: SliverChildListDelegate(<Widget>[
+                _buildIdentity(m),
+                const SizedBox(height: 20),
+                _buildStatsRow(m),
+                const SizedBox(height: 18),
+                _Section(
+                  title: 'About',
                   child: Text(
-                    m['initials'] as String,
-                    style: GoogleFonts.poppins(
-                      fontSize: 26,
-                      fontWeight: FontWeight.w700,
-                      color: accent,
-                    ),
+                    'Experienced ${m['specialization']} specialist serving '
+                    'the Copperbelt region. Reliable, fast and friendly — '
+                    'trusted by ${m['jobs']}+ vehicle owners.',
+                    style: appStyle(
+                      13,
+                      AppColors.textSecondary,
+                      FontWeight.w400,
+                    ).copyWith(height: 1.55),
                   ),
                 ),
                 const SizedBox(height: 12),
-                Text(
-                  m['name'] as String,
-                  style: GoogleFonts.poppins(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  m['specialization'] as String,
-                  style: GoogleFonts.poppins(
-                    fontSize: 13,
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-                const SizedBox(height: 14),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Helpers.statusColor(
-                      m['status'] as String,
-                    ).withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
+                _Section(
+                  title: 'Services & Pricing',
+                  child: Column(
                     children: <Widget>[
-                      Container(
-                        width: 6,
-                        height: 6,
-                        decoration: BoxDecoration(
-                          color: Helpers.statusColor(m['status'] as String),
-                          shape: BoxShape.circle,
-                        ),
+                      _PriceRow(label: 'Call-out fee', value: 'K50'),
+                      _PriceRow(
+                        label: 'Hourly rate',
+                        value: m['rate'] as String,
                       ),
-                      const SizedBox(width: 6),
-                      Text(
-                        Helpers.statusLabel(m['status'] as String),
-                        style: GoogleFonts.poppins(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: Helpers.statusColor(m['status'] as String),
-                        ),
+                      _PriceRow(label: 'Diagnostic', value: 'K80'),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 12),
+                _Section(
+                  title: 'Specialties',
+                  child: Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: _specialtyChips(m['specialization'] as String),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                _Section(
+                  title: 'Recent reviews',
+                  child: Column(
+                    children: const <Widget>[
+                      _Review(
+                        name: 'Mwansa C.',
+                        rating: 5,
+                        text:
+                            'Quick response and fixed my alternator in under an hour.',
+                      ),
+                      SizedBox(height: 10),
+                      _Review(
+                        name: 'Bwalya M.',
+                        rating: 4,
+                        text:
+                            'Fair pricing and good communication. Will use again.',
                       ),
                     ],
                   ),
                 ),
-              ],
+                const SizedBox(height: 24),
+                Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: FixaOutlinedButton(
+                        label: 'Message',
+                        icon: Icons.chat_bubble_outline_rounded,
+                        onPressed: () => Helpers.showSnack(
+                          context,
+                          'Chat — coming soon',
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: PrimaryButton(
+                        label: 'Request Now',
+                        onPressed: () =>
+                            context.push('/request/${m['id']}'),
+                      ),
+                    ),
+                  ],
+                ),
+              ]),
             ),
           ),
-          const SizedBox(height: 16),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHero(BuildContext context, Map<String, dynamic> m) {
+    final String? image = m['image'] as String?;
+
+    return SliverAppBar(
+      expandedHeight: 280,
+      backgroundColor: AppColors.dark,
+      foregroundColor: Colors.white,
+      pinned: true,
+      stretch: true,
+      elevation: 0,
+      leading: Padding(
+        padding: const EdgeInsets.all(8),
+        child: Material(
+          color: Colors.white.withValues(alpha: 0.9),
+          shape: const CircleBorder(),
+          child: InkWell(
+            customBorder: const CircleBorder(),
+            onTap: () => Navigator.of(context).maybePop(),
+            child: const Padding(
+              padding: EdgeInsets.all(8),
+              child: Icon(
+                Icons.arrow_back_ios_new_rounded,
+                size: 16,
+                color: AppColors.textPrimary,
+              ),
+            ),
+          ),
+        ),
+      ),
+      actions: <Widget>[
+        Padding(
+          padding: const EdgeInsets.all(8),
+          child: Material(
+            color: Colors.white.withValues(alpha: 0.9),
+            shape: const CircleBorder(),
+            child: InkWell(
+              customBorder: const CircleBorder(),
+              onTap: () => Helpers.showSnack(
+                context,
+                'Added to favourites',
+              ),
+              child: const Padding(
+                padding: EdgeInsets.all(8),
+                child: Icon(
+                  Icons.favorite_border_rounded,
+                  size: 18,
+                  color: AppColors.error,
+                ),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(width: 4),
+      ],
+      flexibleSpace: FlexibleSpaceBar(
+        background: Stack(
+          fit: StackFit.expand,
+          children: <Widget>[
+            if (image != null)
+              CachedNetworkImage(
+                imageUrl: image,
+                fit: BoxFit.cover,
+                errorWidget:
+                    (BuildContext context, String url, Object error) =>
+                        Container(color: AppColors.dark),
+              )
+            else
+              Container(color: AppColors.dark),
+            DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: <Color>[
+                    Colors.black.withValues(alpha: 0.0),
+                    Colors.black.withValues(alpha: 0.55),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildIdentity(Map<String, dynamic> m) {
+    final Color statusBg =
+        Helpers.statusColor(m['status'] as String).withValues(alpha: 0.12);
+    final Color statusFg = Helpers.statusColor(m['status'] as String);
+
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: <BoxShadow>[
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
           Row(
             children: <Widget>[
               Expanded(
-                child: _StatCard(
-                  icon: Icons.star_rounded,
-                  color: AppColors.primary,
-                  label: (m['rating'] as num).toStringAsFixed(1),
-                  caption: 'Rating',
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      m['name'] as String,
+                      style: appStyle(
+                        20,
+                        AppColors.textPrimary,
+                        FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      m['specialization'] as String,
+                      style: appStyle(
+                        13,
+                        AppColors.textSecondary,
+                        FontWeight.w500,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: _StatCard(
-                  icon: Icons.check_circle_outline_rounded,
-                  color: AppColors.success,
-                  label: '${m['jobs']}',
-                  caption: 'Jobs done',
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
                 ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: _StatCard(
-                  icon: Icons.schedule_rounded,
-                  color: AppColors.dark,
-                  label: m['eta'] as String,
-                  caption: 'ETA',
+                decoration: BoxDecoration(
+                  color: statusBg,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Container(
+                      width: 6,
+                      height: 6,
+                      decoration: BoxDecoration(
+                        color: statusFg,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      Helpers.statusLabel(m['status'] as String),
+                      style: appStyle(12, statusFg, FontWeight.w600),
+                    ),
+                  ],
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 18),
-          _Section(
-            title: 'About',
-            child: Text(
-              'Experienced ${m['specialization']} specialist serving the '
-              'Copperbelt region. Reliable, fast and friendly — trusted by '
-              '${m['jobs']}+ vehicle owners.',
-              style: GoogleFonts.poppins(
-                fontSize: 13,
-                color: AppColors.textSecondary,
-                height: 1.5,
-              ),
-            ),
-          ),
           const SizedBox(height: 12),
-          _Section(
-            title: 'Pricing',
-            child: Column(
-              children: <Widget>[
-                _PriceRow(label: 'Call-out fee', value: 'K50'),
-                _PriceRow(label: 'Hourly rate', value: m['rate'] as String),
-                _PriceRow(label: 'Diagnostic', value: 'K80'),
-              ],
-            ),
-          ),
-          const SizedBox(height: 12),
-          _Section(
-            title: 'Recent reviews',
-            child: Column(
-              children: const <Widget>[
-                _Review(
-                  name: 'Mwansa C.',
-                  rating: 5,
-                  text:
-                      'Quick response and fixed my alternator in under an hour.',
-                ),
-                SizedBox(height: 10),
-                _Review(
-                  name: 'Bwalya M.',
-                  rating: 4,
-                  text: 'Fair pricing and good communication. Will use again.',
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 24),
           Row(
             children: <Widget>[
-              Expanded(
-                child: FixaOutlinedButton(
-                  label: 'Message',
-                  icon: Icons.chat_bubble_outline_rounded,
-                  onPressed: () =>
-                      Helpers.showSnack(context, 'Chat — coming soon'),
+              const Icon(
+                Icons.place_outlined,
+                size: 16,
+                color: AppColors.textSecondary,
+              ),
+              const SizedBox(width: 4),
+              Text(
+                '${m['distance']} • ${m['eta']}',
+                style: appStyle(
+                  12,
+                  AppColors.textSecondary,
+                  FontWeight.w500,
                 ),
               ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: PrimaryButton(
-                  label: 'Request Now',
-                  onPressed: () => context.push('/request/${m['id']}'),
+              const Spacer(),
+              const Icon(
+                Icons.star_rounded,
+                size: 16,
+                color: AppColors.primary,
+              ),
+              const SizedBox(width: 2),
+              Text(
+                (m['rating'] as num).toStringAsFixed(1),
+                style: appStyle(
+                  13,
+                  AppColors.textPrimary,
+                  FontWeight.w600,
+                ),
+              ),
+              const SizedBox(width: 4),
+              Text(
+                '(${m['jobs']} jobs)',
+                style: appStyle(
+                  12,
+                  AppColors.textSecondary,
+                  FontWeight.w400,
                 ),
               ),
             ],
@@ -218,6 +331,68 @@ class MechanicProfileScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Widget _buildStatsRow(Map<String, dynamic> m) {
+    return Row(
+      children: <Widget>[
+        Expanded(
+          child: _StatCard(
+            icon: Icons.star_rounded,
+            color: AppColors.primary,
+            label: (m['rating'] as num).toStringAsFixed(1),
+            caption: 'Rating',
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: _StatCard(
+            icon: Icons.check_circle_outline_rounded,
+            color: AppColors.success,
+            label: '${m['jobs']}',
+            caption: 'Jobs done',
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: _StatCard(
+            icon: Icons.schedule_rounded,
+            color: AppColors.dark,
+            label: m['eta'] as String,
+            caption: 'ETA',
+          ),
+        ),
+      ],
+    );
+  }
+
+  List<Widget> _specialtyChips(String specialization) {
+    // Split the specialization on common separators for nicer visuals.
+    final List<String> parts = specialization
+        .split(RegExp(r'[&,/]'))
+        .map((String s) => s.trim())
+        .where((String s) => s.isNotEmpty)
+        .toList();
+    final List<String> tags =
+        parts.isEmpty ? <String>[specialization] : parts;
+    return tags
+        .map(
+          (String label) => Container(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: AppColors.primaryLight,
+              borderRadius: BorderRadius.circular(20),
+              border:
+                  Border.all(color: AppColors.primary.withValues(alpha: 0.4)),
+            ),
+            child: Text(
+              label,
+              style: appStyle(12, AppColors.primary, FontWeight.w600),
+            ),
+          ),
+        )
+        .toList();
   }
 }
 
@@ -248,13 +423,9 @@ class _Section extends StatelessWidget {
         children: <Widget>[
           Text(
             title,
-            style: GoogleFonts.poppins(
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
-            ),
+            style: appStyle(15, AppColors.textPrimary, FontWeight.w600),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 12),
           child,
         ],
       ),
@@ -296,18 +467,11 @@ class _StatCard extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             label,
-            style: GoogleFonts.poppins(
-              fontSize: 15,
-              fontWeight: FontWeight.w700,
-              color: AppColors.textPrimary,
-            ),
+            style: appStyle(15, AppColors.textPrimary, FontWeight.w700),
           ),
           Text(
             caption,
-            style: GoogleFonts.poppins(
-              fontSize: 11,
-              color: AppColors.textSecondary,
-            ),
+            style: appStyle(11, AppColors.textSecondary, FontWeight.w400),
           ),
         ],
       ),
@@ -330,19 +494,16 @@ class _PriceRow extends StatelessWidget {
           Expanded(
             child: Text(
               label,
-              style: GoogleFonts.poppins(
-                fontSize: 13,
-                color: AppColors.textSecondary,
+              style: appStyle(
+                13,
+                AppColors.textSecondary,
+                FontWeight.w400,
               ),
             ),
           ),
           Text(
             value,
-            style: GoogleFonts.poppins(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
-            ),
+            style: appStyle(13, AppColors.textPrimary, FontWeight.w600),
           ),
         ],
       ),
@@ -351,7 +512,11 @@ class _PriceRow extends StatelessWidget {
 }
 
 class _Review extends StatelessWidget {
-  const _Review({required this.name, required this.rating, required this.text});
+  const _Review({
+    required this.name,
+    required this.rating,
+    required this.text,
+  });
 
   final String name;
   final int rating;
@@ -372,10 +537,10 @@ class _Review extends StatelessWidget {
             children: <Widget>[
               Text(
                 name,
-                style: GoogleFonts.poppins(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
+                style: appStyle(
+                  13,
+                  AppColors.textPrimary,
+                  FontWeight.w600,
                 ),
               ),
               const Spacer(),
@@ -383,18 +548,19 @@ class _Review extends StatelessWidget {
                 Icon(
                   Icons.star_rounded,
                   size: 14,
-                  color: i < rating ? AppColors.primary : AppColors.divider,
+                  color:
+                      i < rating ? AppColors.primary : AppColors.divider,
                 ),
             ],
           ),
           const SizedBox(height: 4),
           Text(
             text,
-            style: GoogleFonts.poppins(
-              fontSize: 12,
-              color: AppColors.textSecondary,
-              height: 1.4,
-            ),
+            style: appStyle(
+              12,
+              AppColors.textSecondary,
+              FontWeight.w400,
+            ).copyWith(height: 1.4),
           ),
         ],
       ),

@@ -1,91 +1,136 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../core/constants/app_colors.dart';
+import '../../core/utils/app_style.dart';
 
-/// FIXA custom-styled text field with optional leading icon.
+/// FIXA reusable text field. Light-theme only, rounded 20px borders,
+/// floating label support, prefix icon area, validator support.
 class CustomTextField extends StatelessWidget {
   const CustomTextField({
     super.key,
-    required this.hint,
+    this.hint,
+    this.label,
     this.icon,
+    this.prefixIcon,
+    this.suffixIcon,
     this.obscureText = false,
     this.controller,
     this.keyboardType,
     this.maxLines = 1,
     this.onChanged,
-    this.suffix,
-    this.dark = false,
+    this.onTap,
+    this.validator,
+    this.textInputAction,
+    this.enabled = true,
+    this.readOnly = false,
+    this.focusNode,
   });
 
-  final String hint;
+  /// Hint text shown when empty.
+  final String? hint;
+
+  /// Floating label.
+  final String? label;
+
+  /// Convenience: pass an icon and we'll wrap it as a prefix.
   final IconData? icon;
+
+  /// Fully-custom prefix widget (takes precedence over [icon]).
+  final Widget? prefixIcon;
+
+  final Widget? suffixIcon;
   final bool obscureText;
   final TextEditingController? controller;
   final TextInputType? keyboardType;
   final int maxLines;
   final ValueChanged<String>? onChanged;
-  final Widget? suffix;
-
-  /// When true, renders the field on a dark navy background (login screen).
-  final bool dark;
+  final VoidCallback? onTap;
+  final String? Function(String?)? validator;
+  final TextInputAction? textInputAction;
+  final bool enabled;
+  final bool readOnly;
+  final FocusNode? focusNode;
 
   @override
   Widget build(BuildContext context) {
-    final Color fill =
-        dark ? Colors.white.withValues(alpha: 0.08) : AppColors.surface;
-    final Color borderColor =
-        dark ? Colors.white.withValues(alpha: 0.12) : AppColors.divider;
-    final Color textColor = dark ? Colors.white : AppColors.textPrimary;
-    final Color hintColor = dark
-        ? Colors.white.withValues(alpha: 0.55)
-        : AppColors.textSecondary;
-    final Color iconColor = dark
-        ? Colors.white.withValues(alpha: 0.75)
-        : AppColors.textSecondary;
+    final Widget? resolvedPrefix = prefixIcon ??
+        (icon == null
+            ? null
+            : Padding(
+                padding: const EdgeInsets.only(left: 16, right: 12),
+                child: IconTheme(
+                  data: IconThemeData(
+                    color: Colors.grey.shade600,
+                    size: 22,
+                  ),
+                  child: Icon(icon),
+                ),
+              ));
 
-    return TextField(
+    return TextFormField(
       controller: controller,
+      focusNode: focusNode,
       obscureText: obscureText,
       keyboardType: keyboardType,
+      textInputAction: textInputAction ?? TextInputAction.next,
       maxLines: obscureText ? 1 : maxLines,
       onChanged: onChanged,
-      style: GoogleFonts.poppins(
-        fontSize: 14,
-        color: textColor,
-        fontWeight: FontWeight.w500,
-      ),
+      onTap: onTap,
+      enabled: enabled,
+      readOnly: readOnly,
+      validator: validator ?? (String? _) => null,
       cursorColor: AppColors.primary,
+      style: appStyle(
+        14,
+        enabled ? AppColors.textPrimary : Colors.grey.shade600,
+        FontWeight.w500,
+      ),
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: GoogleFonts.poppins(
-          fontSize: 14,
-          color: hintColor,
-          fontWeight: FontWeight.w400,
-        ),
-        filled: true,
-        fillColor: fill,
-        prefixIcon: icon == null
-            ? null
-            : Icon(icon, color: iconColor, size: 20),
-        suffixIcon: suffix,
+        prefixIcon: resolvedPrefix,
+        suffixIcon: suffixIcon,
+        label: label != null ? Text(label!) : null,
+        labelStyle: appStyle(14, Colors.grey.shade600, FontWeight.w500),
+        floatingLabelStyle: appStyle(12, AppColors.primary, FontWeight.w600),
         contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 14,
+          horizontal: 17,
+          vertical: 20,
         ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: borderColor),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: borderColor),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
-        ),
+        hintStyle: appStyle(
+          14,
+          enabled ? Colors.grey.shade600 : Colors.grey.shade400,
+          FontWeight.w400,
+        ).copyWith(letterSpacing: -0.05, height: 1.4),
+        helperStyle: appStyle(12, Colors.grey.shade500, FontWeight.w400),
+        errorStyle: appStyle(12, AppColors.error, FontWeight.w500),
+        errorMaxLines: 2,
+        border: _inputBorder(),
+        enabledBorder: _inputBorder(),
+        focusedBorder: _focusedBorder(),
+        errorBorder: _errorBorder(),
+        focusedErrorBorder: _errorBorder(),
+        disabledBorder: _inputBorder(color: Colors.grey.shade300),
+        filled: true,
+        fillColor: enabled ? Colors.white : Colors.grey.shade50,
       ),
     );
   }
+
+  OutlineInputBorder _inputBorder({Color? color}) => OutlineInputBorder(
+        borderRadius: BorderRadius.circular(20),
+        borderSide: BorderSide(
+          color: color ?? Colors.grey.shade200,
+          width: 1,
+        ),
+      );
+
+  OutlineInputBorder _focusedBorder() => OutlineInputBorder(
+        borderRadius: BorderRadius.circular(20),
+        borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+      );
+
+  OutlineInputBorder _errorBorder() => OutlineInputBorder(
+        borderRadius: BorderRadius.circular(20),
+        borderSide: const BorderSide(color: AppColors.error, width: 1),
+      );
 }

@@ -1,10 +1,11 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/constants/dummy_data.dart';
+import '../../../core/utils/app_style.dart';
 import '../../../widgets/buttons/primary_button.dart';
 import '../../../widgets/common/app_bar.dart';
 import '../../../widgets/inputs/custom_text_field.dart';
@@ -76,21 +77,21 @@ class _RequestMechanicScreenState extends State<RequestMechanicScreen> {
                 Text(
                   AppStrings.mechanicOnTheWay,
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.poppins(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
+                  style: appStyle(
+                    18,
+                    AppColors.textPrimary,
+                    FontWeight.w600,
                   ),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   AppStrings.requestSentMessage,
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.poppins(
-                    fontSize: 13,
-                    color: AppColors.textSecondary,
-                    height: 1.5,
-                  ),
+                  style: appStyle(
+                    13,
+                    AppColors.textSecondary,
+                    FontWeight.w400,
+                  ).copyWith(height: 1.5),
                 ),
                 const SizedBox(height: 22),
                 PrimaryButton(
@@ -147,10 +148,8 @@ class _RequestMechanicScreenState extends State<RequestMechanicScreen> {
           Center(
             child: Text(
               'By confirming you agree to FIXA terms',
-              style: GoogleFonts.poppins(
-                fontSize: 11,
-                color: AppColors.textSecondary,
-              ),
+              style:
+                  appStyle(11, AppColors.textSecondary, FontWeight.w400),
             ),
           ),
         ],
@@ -161,17 +160,13 @@ class _RequestMechanicScreenState extends State<RequestMechanicScreen> {
   Widget _sectionLabel(String label) {
     return Text(
       label,
-      style: GoogleFonts.poppins(
-        fontSize: 14,
-        fontWeight: FontWeight.w600,
-        color: AppColors.textPrimary,
-      ),
+      style: appStyle(14, AppColors.textPrimary, FontWeight.w600),
     );
   }
 
   Widget _buildMechanicHeader() {
     final Map<String, dynamic> m = _mechanic;
-    final Color accent = Color(m['color'] as int);
+    final String? image = m['image'] as String?;
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -182,25 +177,26 @@ class _RequestMechanicScreenState extends State<RequestMechanicScreen> {
       child: Row(
         children: <Widget>[
           Container(
-            width: 54,
-            height: 54,
+            width: 56,
+            height: 56,
+            clipBehavior: Clip.antiAlias,
             decoration: BoxDecoration(
-              color: accent.withValues(alpha: 0.18),
+              color: AppColors.primary.withValues(alpha: 0.12),
               shape: BoxShape.circle,
-              border: Border.all(
-                color: accent.withValues(alpha: 0.4),
-                width: 1.5,
-              ),
+              border: Border.all(color: AppColors.primary, width: 1.5),
             ),
-            alignment: Alignment.center,
-            child: Text(
-              m['initials'] as String,
-              style: GoogleFonts.poppins(
-                fontSize: 17,
-                fontWeight: FontWeight.w700,
-                color: accent,
-              ),
-            ),
+            child: image == null
+                ? const Icon(Icons.person, color: AppColors.primary)
+                : CachedNetworkImage(
+                    imageUrl: image,
+                    fit: BoxFit.cover,
+                    errorWidget: (
+                      BuildContext context,
+                      String url,
+                      Object error,
+                    ) =>
+                        const Icon(Icons.person, color: AppColors.primary),
+                  ),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -209,18 +205,19 @@ class _RequestMechanicScreenState extends State<RequestMechanicScreen> {
               children: <Widget>[
                 Text(
                   m['name'] as String,
-                  style: GoogleFonts.poppins(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
+                  style: appStyle(
+                    15,
+                    AppColors.textPrimary,
+                    FontWeight.w600,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   m['specialization'] as String,
-                  style: GoogleFonts.poppins(
-                    fontSize: 12,
-                    color: AppColors.textSecondary,
+                  style: appStyle(
+                    12,
+                    AppColors.textSecondary,
+                    FontWeight.w400,
                   ),
                 ),
                 const SizedBox(height: 6),
@@ -234,18 +231,19 @@ class _RequestMechanicScreenState extends State<RequestMechanicScreen> {
                     const SizedBox(width: 2),
                     Text(
                       (m['rating'] as num).toStringAsFixed(1),
-                      style: GoogleFonts.poppins(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
+                      style: appStyle(
+                        12,
+                        AppColors.textPrimary,
+                        FontWeight.w600,
                       ),
                     ),
                     const SizedBox(width: 10),
                     Text(
                       '${m['distance']} • ${m['eta']}',
-                      style: GoogleFonts.poppins(
-                        fontSize: 11,
-                        color: AppColors.textSecondary,
+                      style: appStyle(
+                        11,
+                        AppColors.textSecondary,
+                        FontWeight.w400,
                       ),
                     ),
                   ],
@@ -291,8 +289,9 @@ class _RequestMechanicScreenState extends State<RequestMechanicScreen> {
                 children: <Widget>[
                   Icon(
                     _iconForIssue(index),
-                    color:
-                        selected ? AppColors.primary : AppColors.textPrimary,
+                    color: selected
+                        ? AppColors.primary
+                        : AppColors.textPrimary,
                     size: 26,
                   ),
                   const SizedBox(height: 6),
@@ -301,11 +300,10 @@ class _RequestMechanicScreenState extends State<RequestMechanicScreen> {
                     textAlign: TextAlign.center,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.poppins(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w500,
-                      color:
-                          selected ? Colors.white : AppColors.textPrimary,
+                    style: appStyle(
+                      11,
+                      selected ? Colors.white : AppColors.textPrimary,
+                      FontWeight.w500,
                     ),
                   ),
                 ],
@@ -355,11 +353,10 @@ class _RequestMechanicScreenState extends State<RequestMechanicScreen> {
                   ),
                   child: Text(
                     option,
-                    style: GoogleFonts.poppins(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color:
-                          selected ? Colors.white : AppColors.textPrimary,
+                    style: appStyle(
+                      12,
+                      selected ? Colors.white : AppColors.textPrimary,
+                      FontWeight.w600,
                     ),
                   ),
                 ),
@@ -406,24 +403,22 @@ class _RequestMechanicScreenState extends State<RequestMechanicScreen> {
         Expanded(
           child: Text(
             label,
-            style: GoogleFonts.poppins(
-              fontSize: highlight ? 14 : 13,
-              fontWeight: highlight ? FontWeight.w600 : FontWeight.w400,
-              color:
-                  highlight ? AppColors.textPrimary : AppColors.textSecondary,
+            style: appStyle(
+              highlight ? 14 : 13,
+              highlight ? AppColors.textPrimary : AppColors.textSecondary,
+              highlight ? FontWeight.w600 : FontWeight.w400,
             ),
           ),
         ),
         Text(
           value,
-          style: GoogleFonts.poppins(
-            fontSize: highlight ? 16 : 14,
-            fontWeight: FontWeight.w700,
-            color: highlight ? AppColors.primary : AppColors.textPrimary,
+          style: appStyle(
+            highlight ? 16 : 14,
+            highlight ? AppColors.primary : AppColors.textPrimary,
+            FontWeight.w700,
           ),
         ),
       ],
     );
   }
 }
-

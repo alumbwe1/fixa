@@ -1,10 +1,11 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../core/constants/app_colors.dart';
+import '../../core/utils/app_style.dart';
 import '../../core/utils/helpers.dart';
 
-/// Mechanic / garage list-card.
+/// Mechanic / garage list-card with a circular network photo.
 class MechanicCard extends StatelessWidget {
   const MechanicCard({
     super.key,
@@ -27,6 +28,7 @@ class MechanicCard extends StatelessWidget {
     final String distance = mechanic['distance'] as String;
     final String rate = mechanic['rate'] as String;
     final String status = mechanic['status'] as String;
+    final String? image = mechanic['image'] as String?;
     final String initials = mechanic['initials'] as String;
     final Color avatarColor = Helpers.colorFromInt(mechanic['color'] as int);
 
@@ -51,7 +53,11 @@ class MechanicCard extends StatelessWidget {
         children: <Widget>[
           Row(
             children: <Widget>[
-              _Avatar(initials: initials, color: avatarColor),
+              _Avatar(
+                image: image,
+                fallbackInitials: initials,
+                fallbackColor: avatarColor,
+              ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -64,10 +70,10 @@ class MechanicCard extends StatelessWidget {
                             name,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.poppins(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.textPrimary,
+                            style: appStyle(
+                              15,
+                              AppColors.textPrimary,
+                              FontWeight.w600,
                             ),
                           ),
                         ),
@@ -79,9 +85,10 @@ class MechanicCard extends StatelessWidget {
                       specialization,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.poppins(
-                        fontSize: 12,
-                        color: AppColors.textSecondary,
+                      style: appStyle(
+                        12,
+                        AppColors.textSecondary,
+                        FontWeight.w400,
                       ),
                     ),
                   ],
@@ -125,9 +132,10 @@ class MechanicCard extends StatelessWidget {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      textStyle: GoogleFonts.poppins(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
+                      textStyle: appStyle(
+                        13,
+                        AppColors.dark,
+                        FontWeight.w600,
                       ),
                     ),
                     child: const Text('View Profile'),
@@ -148,10 +156,7 @@ class MechanicCard extends StatelessWidget {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      textStyle: GoogleFonts.poppins(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                      ),
+                      textStyle: appStyle(13, Colors.white, FontWeight.w600),
                     ),
                     child: const Text('Request'),
                   ),
@@ -166,29 +171,59 @@ class MechanicCard extends StatelessWidget {
 }
 
 class _Avatar extends StatelessWidget {
-  const _Avatar({required this.initials, required this.color});
+  const _Avatar({
+    required this.image,
+    required this.fallbackInitials,
+    required this.fallbackColor,
+  });
 
-  final String initials;
+  final String? image;
+  final String fallbackInitials;
+  final Color fallbackColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 54,
+      height: 54,
+      decoration: BoxDecoration(
+        color: fallbackColor.withValues(alpha: 0.12),
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: fallbackColor.withValues(alpha: 0.4),
+          width: 1.5,
+        ),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: image == null || image!.isEmpty
+          ? _Initials(text: fallbackInitials, color: fallbackColor)
+          : CachedNetworkImage(
+              imageUrl: image!,
+              fit: BoxFit.cover,
+              placeholder: (BuildContext context, String url) =>
+                  _Initials(text: fallbackInitials, color: fallbackColor),
+              errorWidget:
+                  (BuildContext context, String url, Object error) =>
+                      _Initials(text: fallbackInitials, color: fallbackColor),
+            ),
+    );
+  }
+}
+
+class _Initials extends StatelessWidget {
+  const _Initials({required this.text, required this.color});
+
+  final String text;
   final Color color;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 50,
-      height: 50,
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.18),
-        shape: BoxShape.circle,
-        border: Border.all(color: color.withValues(alpha: 0.4), width: 1.5),
-      ),
       alignment: Alignment.center,
+      color: color.withValues(alpha: 0.18),
       child: Text(
-        initials,
-        style: GoogleFonts.poppins(
-          fontSize: 15,
-          fontWeight: FontWeight.w700,
-          color: color,
-        ),
+        text,
+        style: appStyle(15, color, FontWeight.w700),
       ),
     );
   }
@@ -219,11 +254,7 @@ class _Badge extends StatelessWidget {
           const SizedBox(width: 6),
           Text(
             label,
-            style: GoogleFonts.poppins(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              color: color,
-            ),
+            style: appStyle(11, color, FontWeight.w600),
           ),
         ],
       ),
@@ -251,11 +282,7 @@ class _IconLabel extends StatelessWidget {
         const SizedBox(width: 4),
         Text(
           label,
-          style: GoogleFonts.poppins(
-            fontSize: 12,
-            color: AppColors.textPrimary,
-            fontWeight: FontWeight.w500,
-          ),
+          style: appStyle(12, AppColors.textPrimary, FontWeight.w500),
         ),
       ],
     );

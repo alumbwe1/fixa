@@ -30,12 +30,9 @@ class PrimaryButton extends StatelessWidget {
       disabledForegroundColor: Colors.white,
       elevation: 0,
       padding: const EdgeInsets.symmetric(vertical: 16),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
       minimumSize: fullWidth ? const Size.fromHeight(54) : null,
-      textStyle: GoogleFonts.poppins(
-        fontSize: 15,
-        fontWeight: FontWeight.w600,
-      ),
+      textStyle: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w500),
     );
 
     final Widget child = isLoading

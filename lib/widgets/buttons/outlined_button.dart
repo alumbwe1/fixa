@@ -25,14 +25,11 @@ class FixaOutlinedButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final ButtonStyle style = OutlinedButton.styleFrom(
       foregroundColor: color,
-      side: BorderSide(color: color.withValues(alpha: 0.3)),
+      side: BorderSide(color: color.withValues(alpha: 0.3), width: 1),
       padding: const EdgeInsets.symmetric(vertical: 16),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
       minimumSize: fullWidth ? const Size.fromHeight(54) : null,
-      textStyle: GoogleFonts.poppins(
-        fontSize: 15,
-        fontWeight: FontWeight.w600,
-      ),
+      textStyle: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w500),
     );
 
     return OutlinedButton(

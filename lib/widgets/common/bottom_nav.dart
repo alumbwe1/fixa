@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:iconsax_flutter/iconsax_flutter.dart';
 
 import '../../core/constants/app_colors.dart';
 import '../../core/utils/helpers.dart';
@@ -65,8 +66,8 @@ class FixaBottomNav extends StatelessWidget {
           ),
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
-              icon: Icon(Icons.home_outlined),
-              activeIcon: Icon(Icons.home_rounded),
+              icon: Icon(Iconsax.home_copy),
+              activeIcon: Icon(Iconsax.home),
               label: 'Home',
             ),
             BottomNavigationBarItem(
@@ -80,8 +81,8 @@ class FixaBottomNav extends StatelessWidget {
               label: 'History',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.person_outline_rounded),
-              activeIcon: Icon(Icons.person_rounded),
+              icon: Icon(Iconsax.user_copy),
+              activeIcon: Icon(Iconsax.user),
               label: 'Profile',
             ),
           ],

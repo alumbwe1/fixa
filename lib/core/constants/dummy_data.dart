@@ -1,11 +1,9 @@
 /// All dummy/test data used throughout the FIXA prototype.
-///
-/// This file is the single source of truth for mock mechanics, services,
-/// issues, urgency options, and history items.
 class DummyData {
   DummyData._();
 
-  /// Nearby mechanics with realistic Zambian names and rates in Kwacha.
+  /// Nearby mechanics with realistic Zambian names, rates in Kwacha,
+  /// and Unsplash portrait URLs as avatars.
   static const List<Map<String, dynamic>> mechanics = <Map<String, dynamic>>[
     <String, dynamic>{
       'id': 'm1',
@@ -20,6 +18,8 @@ class DummyData {
       'initials': 'JM',
       'color': 0xFFE8A020,
       'type': 'mechanic',
+      'image':
+          'https://images.unsplash.com/photo-1568602471122-7832951cc4c5?w=400&h=400&fit=crop',
     },
     <String, dynamic>{
       'id': 'm2',
@@ -34,6 +34,8 @@ class DummyData {
       'initials': 'PK',
       'color': 0xFF1565C0,
       'type': 'mechanic',
+      'image':
+          'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop',
     },
     <String, dynamic>{
       'id': 'm3',
@@ -48,6 +50,8 @@ class DummyData {
       'initials': 'AG',
       'color': 0xFF2E7D32,
       'type': 'garage',
+      'image':
+          'https://images.unsplash.com/photo-1486006920555-c77dcf18193c?w=400&h=400&fit=crop',
     },
     <String, dynamic>{
       'id': 'm4',
@@ -62,6 +66,8 @@ class DummyData {
       'initials': 'CB',
       'color': 0xFF6A1B9A,
       'type': 'mechanic',
+      'image':
+          'https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=400&h=400&fit=crop',
     },
     <String, dynamic>{
       'id': 'm5',
@@ -76,40 +82,38 @@ class DummyData {
       'initials': 'RR',
       'color': 0xFFC62828,
       'type': 'towing',
+      'image':
+          'https://images.unsplash.com/photo-1599577180589-0a72a05e3a73?w=400&h=400&fit=crop',
     },
   ];
 
-  /// Service tiles on the home screen.
+  /// Service tiles on the home screen. `asset` points to the icon image.
   static const List<Map<String, dynamic>> services = <Map<String, dynamic>>[
     <String, dynamic>{
       'title': 'Request Mechanic',
-      'iconCode': 0xe1b8, // Icons.build_outlined fallback handled in widget
+      'asset': 'assets/gear.png',
       'bgColor': 0xFFFFF3E0,
-      'iconColor': 0xFFE8A020,
       'highlighted': true,
       'key': 'mechanic',
     },
     <String, dynamic>{
       'title': 'Find Garage',
-      'iconCode': 0xe88a,
+      'asset': 'assets/service.png',
       'bgColor': 0xFFE3F2FD,
-      'iconColor': 0xFF1565C0,
       'highlighted': false,
       'key': 'garage',
     },
     <String, dynamic>{
       'title': 'Towing Service',
-      'iconCode': 0xe531,
+      'asset': 'assets/tire.png',
       'bgColor': 0xFFFFEBEE,
-      'iconColor': 0xFFC62828,
       'highlighted': false,
       'key': 'towing',
     },
     <String, dynamic>{
       'title': 'Book Service',
-      'iconCode': 0xe8df,
+      'asset': 'assets/service.png',
       'bgColor': 0xFFE8F5E9,
-      'iconColor': 0xFF2E7D32,
       'highlighted': false,
       'key': 'book',
     },

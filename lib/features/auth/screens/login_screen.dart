@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
+import '../../../core/utils/app_style.dart';
 import '../../../core/utils/helpers.dart';
 import '../../../widgets/buttons/outlined_button.dart';
 import '../../../widgets/buttons/primary_button.dart';
@@ -25,7 +25,7 @@ class _LoginScreenState extends State<LoginScreen>
     text: 'alumbwe@example.com',
   );
   final TextEditingController _passwordController = TextEditingController(
-    text: '••••••••',
+    text: 'fixa12345',
   );
   bool _obscure = true;
 
@@ -55,7 +55,7 @@ class _LoginScreenState extends State<LoginScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.dark,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: FadeTransition(
           opacity: _fade,
@@ -64,55 +64,47 @@ class _LoginScreenState extends State<LoginScreen>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
-                const SizedBox(height: 12),
+                const SizedBox(height: 24),
                 _buildLogo(),
                 const SizedBox(height: 28),
                 Text(
                   'Welcome back',
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.poppins(
-                    fontSize: 26,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
-                  ),
+                  style: appStyle(26, AppColors.textPrimary, FontWeight.w700),
                 ),
                 const SizedBox(height: 6),
                 Text(
                   AppStrings.tagline,
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.poppins(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    color: Colors.white.withValues(alpha: 0.65),
-                  ),
+                  style: appStyle(14, AppColors.textSecondary, FontWeight.w400),
                 ),
                 const SizedBox(height: 36),
                 CustomTextField(
-                  hint: AppStrings.email,
+                  label: AppStrings.email,
+                  hint: 'you@example.com',
                   icon: Icons.mail_outline_rounded,
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
-                  dark: true,
                 ),
                 const SizedBox(height: 14),
                 CustomTextField(
-                  hint: AppStrings.password,
+                  label: AppStrings.password,
+                  hint: 'Enter your password',
                   icon: Icons.lock_outline_rounded,
                   obscureText: _obscure,
                   controller: _passwordController,
-                  dark: true,
-                  suffix: IconButton(
+                  suffixIcon: IconButton(
                     icon: Icon(
                       _obscure
                           ? Icons.visibility_outlined
                           : Icons.visibility_off_outlined,
-                      color: Colors.white.withValues(alpha: 0.6),
+                      color: Colors.grey.shade600,
                       size: 20,
                     ),
                     onPressed: () => setState(() => _obscure = !_obscure),
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 6),
                 Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
@@ -122,46 +114,37 @@ class _LoginScreenState extends State<LoginScreen>
                     ),
                     style: TextButton.styleFrom(
                       foregroundColor: AppColors.primary,
-                      textStyle: GoogleFonts.poppins(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
+                      textStyle: appStyle(
+                        12,
+                        AppColors.primary,
+                        FontWeight.w500,
                       ),
                     ),
                     child: const Text(AppStrings.forgotPassword),
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 8),
                 PrimaryButton(label: AppStrings.signIn, onPressed: _signIn),
                 const SizedBox(height: 18),
                 Row(
                   children: <Widget>[
-                    Expanded(
-                      child: Divider(
-                        color: Colors.white.withValues(alpha: 0.15),
-                      ),
-                    ),
+                    Expanded(child: Divider(color: Colors.grey.shade300)),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 12),
                       child: Text(
                         'or',
-                        style: GoogleFonts.poppins(
-                          fontSize: 12,
-                          color: Colors.white.withValues(alpha: 0.55),
+                        style: appStyle(
+                          12,
+                          AppColors.textSecondary,
+                          FontWeight.w400,
                         ),
                       ),
                     ),
-                    Expanded(
-                      child: Divider(
-                        color: Colors.white.withValues(alpha: 0.15),
-                      ),
-                    ),
+                    Expanded(child: Divider(color: Colors.grey.shade300)),
                   ],
                 ),
                 const SizedBox(height: 18),
-                FixaOutlinedButton(
-                  label: AppStrings.continueWithGoogle,
-                  icon: Icons.g_mobiledata_rounded,
-                  color: Colors.white,
+                _GoogleButton(
                   onPressed: () => Helpers.showSnack(
                     context,
                     'Google Sign-In is mocked in this prototype',
@@ -171,12 +154,13 @@ class _LoginScreenState extends State<LoginScreen>
                 Center(
                   child: RichText(
                     text: TextSpan(
-                      style: GoogleFonts.poppins(
-                        fontSize: 13,
-                        color: Colors.white.withValues(alpha: 0.65),
+                      style: appStyle(
+                        13,
+                        AppColors.textSecondary,
+                        FontWeight.w400,
                       ),
                       children: <InlineSpan>[
-                        const TextSpan(text: '${AppStrings.dontHaveAccount} '),
+                        const TextSpan(text: "Don't have an account? "),
                         WidgetSpan(
                           alignment: PlaceholderAlignment.middle,
                           child: GestureDetector(
@@ -186,10 +170,10 @@ class _LoginScreenState extends State<LoginScreen>
                             ),
                             child: Text(
                               AppStrings.signUp,
-                              style: GoogleFonts.poppins(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.primary,
+                              style: appStyle(
+                                13,
+                                AppColors.primary,
+                                FontWeight.w600,
                               ),
                             ),
                           ),
@@ -202,9 +186,10 @@ class _LoginScreenState extends State<LoginScreen>
                 Center(
                   child: Text(
                     AppStrings.poweredBy,
-                    style: GoogleFonts.poppins(
-                      fontSize: 11,
-                      color: Colors.white.withValues(alpha: 0.35),
+                    style: appStyle(
+                      11,
+                      AppColors.textSecondary,
+                      FontWeight.w400,
                     ),
                   ),
                 ),
@@ -220,32 +205,87 @@ class _LoginScreenState extends State<LoginScreen>
     return Column(
       children: <Widget>[
         Container(
-          width: 84,
-          height: 84,
+          width: 110,
+          height: 110,
+          padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: AppColors.primary,
+            color: AppColors.primaryLight,
             shape: BoxShape.circle,
             boxShadow: <BoxShadow>[
               BoxShadow(
-                color: AppColors.primary.withValues(alpha: 0.4),
+                color: AppColors.primary.withValues(alpha: 0.25),
                 blurRadius: 24,
                 spreadRadius: 2,
               ),
             ],
           ),
-          child: const Icon(Icons.build_rounded, color: Colors.white, size: 40),
+          child: Image.asset(
+            'assets/fixa.png',
+            fit: BoxFit.contain,
+            errorBuilder:
+                (BuildContext context, Object error, StackTrace? stack) {
+                  return const Icon(
+                    Icons.build_rounded,
+                    color: AppColors.primary,
+                    size: 48,
+                  );
+                },
+          ),
         ),
         const SizedBox(height: 14),
         Text(
           AppStrings.appName,
-          style: GoogleFonts.poppins(
-            fontSize: 30,
-            fontWeight: FontWeight.w800,
-            color: Colors.white,
-            letterSpacing: 3,
-          ),
+          style: appStyle(
+            30,
+            AppColors.textPrimary,
+            FontWeight.w800,
+          ).copyWith(letterSpacing: 3),
         ),
       ],
+    );
+  }
+}
+
+class _GoogleButton extends StatelessWidget {
+  const _GoogleButton({required this.onPressed});
+
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 54,
+      child: OutlinedButton(
+        onPressed: onPressed,
+        style: OutlinedButton.styleFrom(
+          foregroundColor: AppColors.textPrimary,
+          backgroundColor: AppColors.surface,
+          side: BorderSide(color: Colors.grey.shade300),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            SvgPicture.asset(
+              'assets/svgs/google.svg',
+              width: 20,
+              height: 20,
+              placeholderBuilder: (BuildContext context) => const Icon(
+                Icons.g_mobiledata_rounded,
+                size: 22,
+                color: AppColors.textPrimary,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Text(
+              AppStrings.continueWithGoogle,
+              style: appStyle(15, AppColors.textPrimary, FontWeight.w600),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

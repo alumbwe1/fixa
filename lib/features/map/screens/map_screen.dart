@@ -1,11 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/constants/dummy_data.dart';
+import '../../../core/utils/app_style.dart';
 import '../../../core/utils/helpers.dart';
 import '../../../widgets/buttons/outlined_button.dart';
 import '../../../widgets/buttons/primary_button.dart';
@@ -20,11 +20,16 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
-  String _selectedId = 'm1';
+  /// When null, no mechanic is selected — the bottom sheet is hidden.
+  String? _selectedId;
 
-  Map<String, dynamic> get _selectedMechanic =>
-      DummyData.mechanics.firstWhere((Map<String, dynamic> m) =>
-          (m['id'] as String) == _selectedId);
+  Map<String, dynamic>? get _selectedMechanic {
+    if (_selectedId == null) return null;
+    return DummyData.mechanics.firstWhere(
+      (Map<String, dynamic> m) => (m['id'] as String) == _selectedId,
+      orElse: () => DummyData.mechanics.first,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,11 +40,35 @@ class _MapScreenState extends State<MapScreen> {
         bottom: false,
         child: Stack(
           children: <Widget>[
-            _buildMapImage(),
+            // Tapping the map background dismisses the bottom sheet.
+            Positioned.fill(
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () => setState(() => _selectedId = null),
+                child: _buildMapImage(),
+              ),
+            ),
             _buildPins(context),
             _buildUserPin(),
             _buildTopBar(context),
-            _buildBottomSheet(context),
+            // Only render the bottom sheet when a pin is selected.
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 220),
+              switchInCurve: Curves.easeOutCubic,
+              switchOutCurve: Curves.easeIn,
+              transitionBuilder: (Widget child, Animation<double> anim) {
+                return SlideTransition(
+                  position: Tween<Offset>(
+                    begin: const Offset(0, 1),
+                    end: Offset.zero,
+                  ).animate(anim),
+                  child: FadeTransition(opacity: anim, child: child),
+                );
+              },
+              child: _selectedMechanic == null
+                  ? const SizedBox.shrink()
+                  : _buildBottomSheet(context, _selectedMechanic!),
+            ),
           ],
         ),
       ),
@@ -47,22 +76,22 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   Widget _buildMapImage() {
-    return Positioned.fill(
-      child: CachedNetworkImage(
-        imageUrl: AppStrings.mapImage,
-        fit: BoxFit.cover,
-        placeholder: (BuildContext context, String url) => const Center(
-          child: FixaLoadingIndicator(size: FixaLoadingSize.medium),
-        ),
-        errorWidget: (BuildContext context, String url, Object error) =>
-            Container(
-          color: AppColors.background,
-          alignment: Alignment.center,
-          child: const Icon(
-            Icons.map_outlined,
-            size: 80,
-            color: AppColors.textSecondary,
-          ),
+    return CachedNetworkImage(
+      imageUrl: AppStrings.mapImage,
+      fit: BoxFit.cover,
+      width: double.infinity,
+      height: double.infinity,
+      placeholder: (BuildContext context, String url) => const Center(
+        child: FixaLoadingIndicator(size: FixaLoadingSize.medium),
+      ),
+      errorWidget: (BuildContext context, String url, Object error) =>
+          Container(
+        color: AppColors.background,
+        alignment: Alignment.center,
+        child: const Icon(
+          Icons.map_outlined,
+          size: 80,
+          color: AppColors.textSecondary,
         ),
       ),
     );
@@ -82,7 +111,10 @@ class _MapScreenState extends State<MapScreen> {
               left: left - 22,
               top: top - 22,
               child: GestureDetector(
-                onTap: () => setState(() => _selectedId = id),
+                onTap: () => setState(() {
+                  // Tap same pin twice = deselect (hide sheet).
+                  _selectedId = isSelected ? null : id;
+                }),
                 child: _MapPin(type: type, selected: isSelected),
               ),
             );
@@ -133,10 +165,10 @@ class _MapScreenState extends State<MapScreen> {
                 const SizedBox(width: 6),
                 Text(
                   AppStrings.location,
-                  style: GoogleFonts.poppins(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
+                  style: appStyle(
+                    12,
+                    AppColors.textPrimary,
+                    FontWeight.w600,
                   ),
                 ),
               ],
@@ -153,16 +185,16 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
-  Widget _buildBottomSheet(BuildContext context) {
-    final Map<String, dynamic> m = _selectedMechanic;
+  Widget _buildBottomSheet(BuildContext context, Map<String, dynamic> m) {
     return Align(
+      key: ValueKey<String>('sheet-${m['id']}'),
       alignment: Alignment.bottomCenter,
       child: Container(
         margin: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-        padding: const EdgeInsets.fromLTRB(18, 16, 18, 16),
+        padding: const EdgeInsets.fromLTRB(18, 14, 18, 16),
         decoration: BoxDecoration(
           color: AppColors.surface,
-          borderRadius: BorderRadius.circular(22),
+          borderRadius: BorderRadius.circular(28),
           boxShadow: <BoxShadow>[
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.12),
@@ -174,38 +206,22 @@ class _MapScreenState extends State<MapScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: AppColors.divider,
-                borderRadius: BorderRadius.circular(2),
+            // Drag handle / close affordance
+            GestureDetector(
+              onTap: () => setState(() => _selectedId = null),
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: AppColors.divider,
+                  borderRadius: BorderRadius.circular(2),
+                ),
               ),
             ),
             const SizedBox(height: 14),
             Row(
               children: <Widget>[
-                Container(
-                  width: 52,
-                  height: 52,
-                  decoration: BoxDecoration(
-                    color: Color(m['color'] as int).withValues(alpha: 0.18),
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: Color(m['color'] as int).withValues(alpha: 0.4),
-                      width: 1.5,
-                    ),
-                  ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    m['initials'] as String,
-                    style: GoogleFonts.poppins(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: Color(m['color'] as int),
-                    ),
-                  ),
-                ),
+                _SheetAvatar(image: m['image'] as String?),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
@@ -213,18 +229,19 @@ class _MapScreenState extends State<MapScreen> {
                     children: <Widget>[
                       Text(
                         m['name'] as String,
-                        style: GoogleFonts.poppins(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.textPrimary,
+                        style: appStyle(
+                          15,
+                          AppColors.textPrimary,
+                          FontWeight.w600,
                         ),
                       ),
                       const SizedBox(height: 2),
                       Text(
                         m['specialization'] as String,
-                        style: GoogleFonts.poppins(
-                          fontSize: 12,
-                          color: AppColors.textSecondary,
+                        style: appStyle(
+                          12,
+                          AppColors.textSecondary,
+                          FontWeight.w400,
                         ),
                       ),
                     ],
@@ -240,10 +257,10 @@ class _MapScreenState extends State<MapScreen> {
                     const SizedBox(width: 2),
                     Text(
                       (m['rating'] as num).toStringAsFixed(1),
-                      style: GoogleFonts.poppins(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
+                      style: appStyle(
+                        13,
+                        AppColors.textPrimary,
+                        FontWeight.w600,
                       ),
                     ),
                   ],
@@ -258,13 +275,13 @@ class _MapScreenState extends State<MapScreen> {
                   label: m['distance'] as String,
                   caption: 'Distance',
                 ),
-                const SizedBox(width: 14),
+                const SizedBox(width: 10),
                 _Metric(
                   icon: Icons.schedule_rounded,
                   label: m['eta'] as String,
                   caption: 'ETA',
                 ),
-                const SizedBox(width: 14),
+                const SizedBox(width: 10),
                 _Metric(
                   icon: Icons.payments_outlined,
                   label: m['rate'] as String,
@@ -278,16 +295,14 @@ class _MapScreenState extends State<MapScreen> {
                 Expanded(
                   child: FixaOutlinedButton(
                     label: AppStrings.viewProfile,
-                    onPressed: () =>
-                        context.push('/mechanic/${m['id']}'),
+                    onPressed: () => context.push('/mechanic/${m['id']}'),
                   ),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: PrimaryButton(
                     label: AppStrings.requestNow,
-                    onPressed: () =>
-                        context.push('/request/${m['id']}'),
+                    onPressed: () => context.push('/request/${m['id']}'),
                   ),
                 ),
               ],
@@ -295,6 +310,35 @@ class _MapScreenState extends State<MapScreen> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _SheetAvatar extends StatelessWidget {
+  const _SheetAvatar({required this.image});
+
+  final String? image;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 52,
+      height: 52,
+      decoration: BoxDecoration(
+        color: AppColors.primary.withValues(alpha: 0.12),
+        shape: BoxShape.circle,
+        border: Border.all(color: AppColors.primary, width: 1.5),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: image == null
+          ? const Icon(Icons.person, color: AppColors.primary)
+          : CachedNetworkImage(
+              imageUrl: image!,
+              fit: BoxFit.cover,
+              errorWidget:
+                  (BuildContext context, String url, Object error) =>
+                      const Icon(Icons.person, color: AppColors.primary),
+            ),
     );
   }
 }
@@ -413,19 +457,12 @@ class _Metric extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               label,
-              style: GoogleFonts.poppins(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
-              ),
+              style: appStyle(13, AppColors.textPrimary, FontWeight.w600),
             ),
             const SizedBox(height: 2),
             Text(
               caption,
-              style: GoogleFonts.poppins(
-                fontSize: 10,
-                color: AppColors.textSecondary,
-              ),
+              style: appStyle(10, AppColors.textSecondary, FontWeight.w400),
             ),
           ],
         ),

@@ -1,24 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../core/constants/app_colors.dart';
+import '../../core/utils/app_style.dart';
 
-/// Service tile used on the home screen.
+/// Service tile used on the home screen — uses an image asset
+/// instead of a Material icon.
 class ServiceCard extends StatelessWidget {
   const ServiceCard({
     super.key,
     required this.title,
-    required this.icon,
+    required this.asset,
     required this.color,
-    required this.iconColor,
     this.isHighlighted = false,
     required this.onTap,
   });
 
   final String title;
-  final IconData icon;
+
+  /// Path to an asset image (e.g. `assets/gear.png`).
+  final String asset;
+
+  /// Tinted background colour of the icon container.
   final Color color;
-  final Color iconColor;
+
   final bool isHighlighted;
   final VoidCallback onTap;
 
@@ -52,32 +56,38 @@ class ServiceCard extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               Container(
-                width: 44,
-                height: 44,
+                width: 48,
+                height: 48,
+                padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: color,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(14),
                 ),
-                child: Icon(icon, color: iconColor, size: 22),
+                child: Image.asset(
+                  asset,
+                  fit: BoxFit.contain,
+                  errorBuilder:
+                      (BuildContext context, Object error, StackTrace? stack) {
+                    return const Icon(
+                      Icons.build_outlined,
+                      color: AppColors.primary,
+                      size: 22,
+                    );
+                  },
+                ),
               ),
               const SizedBox(height: 14),
               Text(
                 title,
-                style: GoogleFonts.poppins(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
-                ),
+                style: appStyle(14, AppColors.textPrimary, FontWeight.w600),
               ),
               const SizedBox(height: 4),
               Text(
                 isHighlighted ? 'Recommended' : 'Tap to open',
-                style: GoogleFonts.poppins(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w400,
-                  color: isHighlighted
-                      ? AppColors.primary
-                      : AppColors.textSecondary,
+                style: appStyle(
+                  12,
+                  isHighlighted ? AppColors.primary : AppColors.textSecondary,
+                  FontWeight.w400,
                 ),
               ),
             ],
