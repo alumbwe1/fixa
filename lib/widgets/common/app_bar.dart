@@ -38,7 +38,7 @@ class FixaAppBar extends StatelessWidget implements PreferredSizeWidget {
           : null,
       title: Text(
         title,
-        style: appStyle(20, AppColors.textPrimary, FontWeight.w800),
+        style: appStyle(18, AppColors.textPrimary, FontWeight.w700),
       ),
       actions: actions,
     );

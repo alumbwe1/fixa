@@ -1,5 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:iconly/iconly.dart';
+import 'package:iconsax_flutter/iconsax_flutter.dart';
 
 import '../../core/constants/app_colors.dart';
 import '../../core/utils/app_style.dart';
@@ -39,7 +41,7 @@ class MechanicCard extends StatelessWidget {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(25),
         boxShadow: <BoxShadow>[
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -106,13 +108,13 @@ class MechanicCard extends StatelessWidget {
               ),
               const SizedBox(width: 14),
               _IconLabel(
-                icon: Icons.place_outlined,
+                icon: IconlyLight.location,
                 color: AppColors.textSecondary,
                 label: distance,
               ),
               const SizedBox(width: 14),
               _IconLabel(
-                icon: Icons.payments_outlined,
+                icon: Iconsax.wallet_copy,
                 color: AppColors.textSecondary,
                 label: rate,
               ),
@@ -130,13 +132,9 @@ class MechanicCard extends StatelessWidget {
                       side: const BorderSide(color: AppColors.divider),
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(40),
                       ),
-                      textStyle: appStyle(
-                        13,
-                        AppColors.dark,
-                        FontWeight.w600,
-                      ),
+                      textStyle: appStyle(13, AppColors.dark, FontWeight.w600),
                     ),
                     child: const Text('View Profile'),
                   ),
@@ -147,14 +145,15 @@ class MechanicCard extends StatelessWidget {
                     onPressed: status == 'busy' ? null : onRequest,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
-                      disabledBackgroundColor:
-                          AppColors.primary.withValues(alpha: 0.4),
+                      disabledBackgroundColor: AppColors.primary.withValues(
+                        alpha: 0.4,
+                      ),
                       foregroundColor: Colors.white,
                       disabledForegroundColor: Colors.white,
                       elevation: 0,
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(40),
                       ),
                       textStyle: appStyle(13, Colors.white, FontWeight.w600),
                     ),
@@ -202,9 +201,8 @@ class _Avatar extends StatelessWidget {
               fit: BoxFit.cover,
               placeholder: (BuildContext context, String url) =>
                   _Initials(text: fallbackInitials, color: fallbackColor),
-              errorWidget:
-                  (BuildContext context, String url, Object error) =>
-                      _Initials(text: fallbackInitials, color: fallbackColor),
+              errorWidget: (BuildContext context, String url, Object error) =>
+                  _Initials(text: fallbackInitials, color: fallbackColor),
             ),
     );
   }
@@ -221,10 +219,7 @@ class _Initials extends StatelessWidget {
     return Container(
       alignment: Alignment.center,
       color: color.withValues(alpha: 0.18),
-      child: Text(
-        text,
-        style: appStyle(15, color, FontWeight.w700),
-      ),
+      child: Text(text, style: appStyle(15, color, FontWeight.w700)),
     );
   }
 }
@@ -241,7 +236,7 @@ class _Badge extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -252,10 +247,7 @@ class _Badge extends StatelessWidget {
             decoration: BoxDecoration(color: color, shape: BoxShape.circle),
           ),
           const SizedBox(width: 6),
-          Text(
-            label,
-            style: appStyle(11, color, FontWeight.w600),
-          ),
+          Text(label, style: appStyle(10, color, FontWeight.w400)),
         ],
       ),
     );

@@ -28,70 +28,51 @@ class ServiceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: AppColors.surface,
-      borderRadius: BorderRadius.circular(18),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(18),
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(
-              color: isHighlighted ? AppColors.primary : AppColors.divider,
-              width: isHighlighted ? 1.6 : 1,
-            ),
-            boxShadow: <BoxShadow>[
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.04),
-                blurRadius: 12,
-                offset: const Offset(0, 4),
-              ),
-            ],
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.grey.shade200,
+          borderRadius: BorderRadius.circular(25),
+          border: Border.all(
+            color: isHighlighted ? AppColors.primary : AppColors.divider,
+            width: isHighlighted ? 0.5 : 0,
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Container(
-                width: 48,
-                height: 48,
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: color,
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: Image.asset(
-                  asset,
-                  fit: BoxFit.contain,
-                  errorBuilder:
-                      (BuildContext context, Object error, StackTrace? stack) {
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Image.asset(
+              asset,
+              width: 50,
+              height: 50,
+              fit: BoxFit.cover,
+              errorBuilder:
+                  (BuildContext context, Object error, StackTrace? stack) {
                     return const Icon(
                       Icons.build_outlined,
                       color: AppColors.primary,
                       size: 22,
                     );
                   },
-                ),
+            ),
+            const SizedBox(height: 14),
+            Text(
+              title,
+              style: appStyle(14, AppColors.textPrimary, FontWeight.w700),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              isHighlighted ? 'Recommended' : 'Tap to open',
+              style: appStyle(
+                12,
+                isHighlighted ? AppColors.primary : AppColors.textSecondary,
+                FontWeight.w400,
               ),
-              const SizedBox(height: 14),
-              Text(
-                title,
-                style: appStyle(14, AppColors.textPrimary, FontWeight.w600),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                isHighlighted ? 'Recommended' : 'Tap to open',
-                style: appStyle(
-                  12,
-                  isHighlighted ? AppColors.primary : AppColors.textSecondary,
-                  FontWeight.w400,
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

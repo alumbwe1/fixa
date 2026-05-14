@@ -1,6 +1,8 @@
+import 'package:fixa/core/constants/app_style.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:iconly/iconly.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../../core/constants/app_colors.dart';
@@ -72,7 +74,7 @@ class _NearbyMechanicsScreenState extends State<NearbyMechanicsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Colors.white,
       appBar: const FixaAppBar(title: AppStrings.mechanicsTitle),
       body: Column(
         children: <Widget>[
@@ -80,7 +82,7 @@ class _NearbyMechanicsScreenState extends State<NearbyMechanicsScreen> {
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
             child: CustomTextField(
               hint: AppStrings.searchHint,
-              icon: Icons.search_rounded,
+              icon: IconlyLight.search,
               onChanged: (String v) => setState(() => _query = v),
             ),
           ),
@@ -103,10 +105,10 @@ class _NearbyMechanicsScreenState extends State<NearbyMechanicsScreen> {
                   side: BorderSide(
                     color: active ? AppColors.dark : AppColors.divider,
                   ),
-                  labelStyle: GoogleFonts.poppins(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                    color: active ? Colors.white : AppColors.textPrimary,
+                  labelStyle: appStyle(
+                    12,
+                    active ? Colors.white : AppColors.textPrimary,
+                    FontWeight.w500,
                   ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:iconly/iconly.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
@@ -9,7 +10,7 @@ import '../../../core/utils/helpers.dart';
 import '../../../widgets/cards/mechanic_card.dart';
 import '../../../widgets/cards/service_card.dart';
 import '../../../widgets/common/bottom_nav.dart';
-import '../../../widgets/inputs/custom_text_field.dart';
+import '../../../widgets/inputs/home_search_bar.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -62,11 +63,12 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, dynamic>> nearby =
-        DummyData.mechanics.take(2).toList();
+    final List<Map<String, dynamic>> nearby = DummyData.mechanics
+        .take(2)
+        .toList();
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Colors.white,
       bottomNavigationBar: const FixaBottomNav(currentIndex: 0),
       body: FadeTransition(
         opacity: _slideController,
@@ -141,14 +143,9 @@ class _HomeScreenState extends State<HomeScreen>
             children: <Widget>[
               Text(
                 'Hello there 👋',
-                style:
-                    appStyle(12, AppColors.textSecondary, FontWeight.w400),
+                style: appStyle(12, AppColors.textSecondary, FontWeight.w400),
               ),
-              const SizedBox(height: 2),
-              Text(
-                AppStrings.greeting,
-                style: appStyle(20, AppColors.textPrimary, FontWeight.w600),
-              ),
+
               const SizedBox(height: 10),
               const _LocationChip(),
             ],
@@ -160,13 +157,12 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Widget _buildSearchBar() {
-    // Independent neutral-coloured search bar — matches the surface tone
-    // of the service cards.
-    return CustomTextField(
+    // New dedicated home search bar with a neutral background tone —
+    // distinct from the white service cards beneath it.
+    return HomeSearchBar(
       hint: AppStrings.searchHint,
-      icon: Icons.search_rounded,
-      textInputAction: TextInputAction.search,
       onChanged: (_) {},
+      onFilterTap: () => Helpers.showSnack(context, 'Filters — coming soon'),
     );
   }
 
@@ -176,7 +172,7 @@ class _HomeScreenState extends State<HomeScreen>
         Expanded(
           child: Text(
             title,
-            style: appStyle(16, AppColors.textPrimary, FontWeight.w600),
+            style: appStyle(18, AppColors.textPrimary, FontWeight.w800),
           ),
         ),
         if (trailing != null) trailing,
@@ -193,7 +189,7 @@ class _HomeScreenState extends State<HomeScreen>
         crossAxisCount: 2,
         mainAxisSpacing: 12,
         crossAxisSpacing: 12,
-        childAspectRatio: 1.35,
+        childAspectRatio: 1.25,
       ),
       itemBuilder: (BuildContext context, int index) {
         final Map<String, dynamic> service = DummyData.services[index];
@@ -214,19 +210,9 @@ class _Avatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 48,
-      height: 48,
-      decoration: BoxDecoration(
-        color: AppColors.primary.withValues(alpha: 0.15),
-        shape: BoxShape.circle,
-        border: Border.all(color: AppColors.primary, width: 1.5),
-      ),
-      alignment: Alignment.center,
-      child: Text(
-        'A',
-        style: appStyle(18, AppColors.primary, FontWeight.w700),
-      ),
+    return CircleAvatar(
+      radius: 20,
+      backgroundImage: AssetImage('assets/avatar.png'),
     );
   }
 }
@@ -236,34 +222,22 @@ class _LocationChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.divider),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          const Icon(
-            Icons.place_rounded,
-            size: 16,
-            color: AppColors.primary,
-          ),
-          const SizedBox(width: 6),
-          Text(
-            AppStrings.location,
-            style: appStyle(12, AppColors.textPrimary, FontWeight.w500),
-          ),
-          const SizedBox(width: 4),
-          Icon(
-            Icons.keyboard_arrow_down_rounded,
-            size: 16,
-            color: Colors.grey.shade600,
-          ),
-        ],
-      ),
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        const Icon(IconlyLight.location, size: 16, color: AppColors.primary),
+        const SizedBox(width: 6),
+        Text(
+          AppStrings.location,
+          style: appStyle(12, Colors.grey.shade600, FontWeight.w500),
+        ),
+        const SizedBox(width: 4),
+        Icon(
+          Icons.keyboard_arrow_down_rounded,
+          size: 16,
+          color: Colors.grey.shade600,
+        ),
+      ],
     );
   }
 }

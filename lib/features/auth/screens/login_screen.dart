@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:iconly/iconly.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/utils/app_style.dart';
 import '../../../core/utils/helpers.dart';
-import '../../../widgets/buttons/outlined_button.dart';
 import '../../../widgets/buttons/primary_button.dart';
 import '../../../widgets/inputs/custom_text_field.dart';
 
@@ -55,7 +55,7 @@ class _LoginScreenState extends State<LoginScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: FadeTransition(
           opacity: _fade,
@@ -70,7 +70,7 @@ class _LoginScreenState extends State<LoginScreen>
                 Text(
                   'Welcome back',
                   textAlign: TextAlign.center,
-                  style: appStyle(26, AppColors.textPrimary, FontWeight.w700),
+                  style: appStyle(30, AppColors.textPrimary, FontWeight.w800),
                 ),
                 const SizedBox(height: 6),
                 Text(
@@ -82,7 +82,7 @@ class _LoginScreenState extends State<LoginScreen>
                 CustomTextField(
                   label: AppStrings.email,
                   hint: 'you@example.com',
-                  icon: Icons.mail_outline_rounded,
+                  icon: IconlyLight.message,
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
                 ),
@@ -90,7 +90,7 @@ class _LoginScreenState extends State<LoginScreen>
                 CustomTextField(
                   label: AppStrings.password,
                   hint: 'Enter your password',
-                  icon: Icons.lock_outline_rounded,
+                  icon: IconlyLight.lock,
                   obscureText: _obscure,
                   controller: _passwordController,
                   suffixIcon: IconButton(
@@ -204,23 +204,12 @@ class _LoginScreenState extends State<LoginScreen>
   Widget _buildLogo() {
     return Column(
       children: <Widget>[
-        Container(
-          width: 110,
-          height: 110,
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: AppColors.primaryLight,
-            shape: BoxShape.circle,
-            boxShadow: <BoxShadow>[
-              BoxShadow(
-                color: AppColors.primary.withValues(alpha: 0.25),
-                blurRadius: 24,
-                spreadRadius: 2,
-              ),
-            ],
-          ),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(16),
           child: Image.asset(
             'assets/fixa.png',
+            height: 150,
+            width: 150,
             fit: BoxFit.contain,
             errorBuilder:
                 (BuildContext context, Object error, StackTrace? stack) {
@@ -231,15 +220,6 @@ class _LoginScreenState extends State<LoginScreen>
                   );
                 },
           ),
-        ),
-        const SizedBox(height: 14),
-        Text(
-          AppStrings.appName,
-          style: appStyle(
-            30,
-            AppColors.textPrimary,
-            FontWeight.w800,
-          ).copyWith(letterSpacing: 3),
         ),
       ],
     );
@@ -262,7 +242,7 @@ class _GoogleButton extends StatelessWidget {
           backgroundColor: AppColors.surface,
           side: BorderSide(color: Colors.grey.shade300),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(40),
           ),
         ),
         child: Row(

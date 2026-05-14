@@ -32,10 +32,9 @@ class _RequestMechanicScreenState extends State<RequestMechanicScreen> {
   }
 
   Map<String, dynamic> get _mechanic => DummyData.mechanics.firstWhere(
-        (Map<String, dynamic> m) =>
-            (m['id'] as String) == widget.mechanicId,
-        orElse: () => DummyData.mechanics.first,
-      );
+    (Map<String, dynamic> m) => (m['id'] as String) == widget.mechanicId,
+    orElse: () => DummyData.mechanics.first,
+  );
 
   Future<void> _submit() async {
     setState(() => _submitting = true);
@@ -77,11 +76,7 @@ class _RequestMechanicScreenState extends State<RequestMechanicScreen> {
                 Text(
                   AppStrings.mechanicOnTheWay,
                   textAlign: TextAlign.center,
-                  style: appStyle(
-                    18,
-                    AppColors.textPrimary,
-                    FontWeight.w600,
-                  ),
+                  style: appStyle(18, AppColors.textPrimary, FontWeight.w600),
                 ),
                 const SizedBox(height: 8),
                 Text(
@@ -112,7 +107,7 @@ class _RequestMechanicScreenState extends State<RequestMechanicScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Colors.white,
       appBar: const FixaAppBar(title: AppStrings.requestTitle),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
@@ -148,8 +143,7 @@ class _RequestMechanicScreenState extends State<RequestMechanicScreen> {
           Center(
             child: Text(
               'By confirming you agree to FIXA terms',
-              style:
-                  appStyle(11, AppColors.textSecondary, FontWeight.w400),
+              style: appStyle(11, AppColors.textSecondary, FontWeight.w400),
             ),
           ),
         ],
@@ -160,7 +154,7 @@ class _RequestMechanicScreenState extends State<RequestMechanicScreen> {
   Widget _sectionLabel(String label) {
     return Text(
       label,
-      style: appStyle(14, AppColors.textPrimary, FontWeight.w600),
+      style: appStyle(14, AppColors.textPrimary, FontWeight.w800),
     );
   }
 
@@ -169,11 +163,7 @@ class _RequestMechanicScreenState extends State<RequestMechanicScreen> {
     final String? image = m['image'] as String?;
     return Container(
       padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppColors.divider),
-      ),
+      decoration: BoxDecoration(),
       child: Row(
         children: <Widget>[
           Container(
@@ -190,12 +180,9 @@ class _RequestMechanicScreenState extends State<RequestMechanicScreen> {
                 : CachedNetworkImage(
                     imageUrl: image,
                     fit: BoxFit.cover,
-                    errorWidget: (
-                      BuildContext context,
-                      String url,
-                      Object error,
-                    ) =>
-                        const Icon(Icons.person, color: AppColors.primary),
+                    errorWidget:
+                        (BuildContext context, String url, Object error) =>
+                            const Icon(Icons.person, color: AppColors.primary),
                   ),
           ),
           const SizedBox(width: 12),
@@ -205,20 +192,12 @@ class _RequestMechanicScreenState extends State<RequestMechanicScreen> {
               children: <Widget>[
                 Text(
                   m['name'] as String,
-                  style: appStyle(
-                    15,
-                    AppColors.textPrimary,
-                    FontWeight.w600,
-                  ),
+                  style: appStyle(15, AppColors.textPrimary, FontWeight.w600),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   m['specialization'] as String,
-                  style: appStyle(
-                    12,
-                    AppColors.textSecondary,
-                    FontWeight.w400,
-                  ),
+                  style: appStyle(12, AppColors.textSecondary, FontWeight.w400),
                 ),
                 const SizedBox(height: 6),
                 Row(
@@ -272,14 +251,14 @@ class _RequestMechanicScreenState extends State<RequestMechanicScreen> {
         final bool selected = _selectedIssue == index;
         return Material(
           color: selected ? AppColors.dark : AppColors.surface,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(30),
           child: InkWell(
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(30),
             onTap: () => setState(() => _selectedIssue = index),
             child: Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(30),
                 border: Border.all(
                   color: selected ? AppColors.dark : AppColors.divider,
                 ),
@@ -289,9 +268,7 @@ class _RequestMechanicScreenState extends State<RequestMechanicScreen> {
                 children: <Widget>[
                   Icon(
                     _iconForIssue(index),
-                    color: selected
-                        ? AppColors.primary
-                        : AppColors.textPrimary,
+                    color: selected ? AppColors.primary : AppColors.textPrimary,
                     size: 26,
                   ),
                   const SizedBox(height: 6),
@@ -336,19 +313,17 @@ class _RequestMechanicScreenState extends State<RequestMechanicScreen> {
             padding: const EdgeInsets.only(right: 8),
             child: Material(
               color: selected ? AppColors.primary : AppColors.surface,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(40),
               child: InkWell(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(40),
                 onTap: () => setState(() => _urgency = option),
                 child: Container(
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(40),
                     border: Border.all(
-                      color: selected
-                          ? AppColors.primary
-                          : AppColors.divider,
+                      color: selected ? AppColors.primary : AppColors.divider,
                     ),
                   ),
                   child: Text(

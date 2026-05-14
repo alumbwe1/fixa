@@ -1,6 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:iconly/iconly.dart';
+import 'package:iconsax_flutter/iconsax_flutter.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
@@ -9,7 +11,6 @@ import '../../../core/utils/app_style.dart';
 import '../../../core/utils/helpers.dart';
 import '../../../widgets/buttons/outlined_button.dart';
 import '../../../widgets/buttons/primary_button.dart';
-import '../../../widgets/common/bottom_nav.dart';
 import '../../../widgets/loading/custom_loading_indicator.dart';
 
 class MapScreen extends StatefulWidget {
@@ -34,8 +35,9 @@ class _MapScreenState extends State<MapScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // Bottom nav is intentionally hidden on the map screen so the
+      // map can fill the viewport edge to edge.
       backgroundColor: AppColors.background,
-      bottomNavigationBar: const FixaBottomNav(currentIndex: 1),
       body: SafeArea(
         bottom: false,
         child: Stack(
@@ -86,14 +88,14 @@ class _MapScreenState extends State<MapScreen> {
       ),
       errorWidget: (BuildContext context, String url, Object error) =>
           Container(
-        color: AppColors.background,
-        alignment: Alignment.center,
-        child: const Icon(
-          Icons.map_outlined,
-          size: 80,
-          color: AppColors.textSecondary,
-        ),
-      ),
+            color: AppColors.background,
+            alignment: Alignment.center,
+            child: const Icon(
+              Icons.map_outlined,
+              size: 80,
+              color: AppColors.textSecondary,
+            ),
+          ),
     );
   }
 
@@ -125,10 +127,7 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   Widget _buildUserPin() {
-    return const Align(
-      alignment: Alignment(0.0, 0.05),
-      child: _UserPin(),
-    );
+    return const Align(alignment: Alignment(0.0, 0.05), child: _UserPin());
   }
 
   Widget _buildTopBar(BuildContext context) {
@@ -158,18 +157,14 @@ class _MapScreenState extends State<MapScreen> {
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 const Icon(
-                  Icons.place_rounded,
+                  IconlyBold.location,
                   size: 16,
                   color: AppColors.primary,
                 ),
                 const SizedBox(width: 6),
                 Text(
                   AppStrings.location,
-                  style: appStyle(
-                    12,
-                    AppColors.textPrimary,
-                    FontWeight.w600,
-                  ),
+                  style: appStyle(12, AppColors.textPrimary, FontWeight.w600),
                 ),
               ],
             ),
@@ -177,8 +172,7 @@ class _MapScreenState extends State<MapScreen> {
           const Spacer(),
           _CircleAction(
             icon: Icons.layers_outlined,
-            onTap: () =>
-                Helpers.showSnack(context, 'Map layers — coming soon'),
+            onTap: () => Helpers.showSnack(context, 'Map layers — coming soon'),
           ),
         ],
       ),
@@ -190,11 +184,10 @@ class _MapScreenState extends State<MapScreen> {
       key: ValueKey<String>('sheet-${m['id']}'),
       alignment: Alignment.bottomCenter,
       child: Container(
-        margin: const EdgeInsets.fromLTRB(12, 0, 12, 12),
         padding: const EdgeInsets.fromLTRB(18, 14, 18, 16),
         decoration: BoxDecoration(
           color: AppColors.surface,
-          borderRadius: BorderRadius.circular(28),
+          borderRadius: BorderRadius.circular(40),
           boxShadow: <BoxShadow>[
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.12),
@@ -271,7 +264,7 @@ class _MapScreenState extends State<MapScreen> {
             Row(
               children: <Widget>[
                 _Metric(
-                  icon: Icons.place_outlined,
+                  icon: IconlyLight.location,
                   label: m['distance'] as String,
                   caption: 'Distance',
                 ),
@@ -283,7 +276,7 @@ class _MapScreenState extends State<MapScreen> {
                 ),
                 const SizedBox(width: 10),
                 _Metric(
-                  icon: Icons.payments_outlined,
+                  icon: Iconsax.wallet_copy,
                   label: m['rate'] as String,
                   caption: 'Rate',
                 ),
@@ -307,6 +300,7 @@ class _MapScreenState extends State<MapScreen> {
                 ),
               ],
             ),
+            const SizedBox(height: 20),
           ],
         ),
       ),
@@ -335,9 +329,8 @@ class _SheetAvatar extends StatelessWidget {
           : CachedNetworkImage(
               imageUrl: image!,
               fit: BoxFit.cover,
-              errorWidget:
-                  (BuildContext context, String url, Object error) =>
-                      const Icon(Icons.person, color: AppColors.primary),
+              errorWidget: (BuildContext context, String url, Object error) =>
+                  const Icon(Icons.person, color: AppColors.primary),
             ),
     );
   }
@@ -449,11 +442,11 @@ class _Metric extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
         decoration: BoxDecoration(
           color: AppColors.background,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(20),
         ),
         child: Column(
           children: <Widget>[
-            Icon(icon, size: 16, color: AppColors.primary),
+            Icon(icon, size: 16, color: AppColors.textSecondary),
             const SizedBox(height: 4),
             Text(
               label,

@@ -24,10 +24,8 @@ class FixaBottomNav extends StatelessWidget {
       case 1:
         context.go('/map');
         break;
+
       case 2:
-        Helpers.showSnack(context, 'History — coming soon');
-        break;
-      case 3:
         Helpers.showSnack(context, 'Profile — coming soon');
         break;
     }
@@ -71,17 +69,13 @@ class FixaBottomNav extends StatelessWidget {
               label: 'Home',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.map_outlined),
+              icon: Icon(Icons.map_rounded),
               activeIcon: Icon(Icons.map_rounded),
               label: 'Map',
             ),
+
             BottomNavigationBarItem(
-              icon: Icon(Icons.history_outlined),
-              activeIcon: Icon(Icons.history_rounded),
-              label: 'History',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Iconsax.user_copy),
+              icon: Icon(Iconsax.user),
               activeIcon: Icon(Iconsax.user),
               label: 'Profile',
             ),
