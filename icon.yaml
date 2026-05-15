@@ -1,0 +1,31 @@
+# flutter pub run flutter_launcher_icons
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/fixa.png"
+  min_sdk_android: 21
+
+  # Adaptive icons for Android
+  adaptive_icon_background: "#1D9E75"
+  adaptive_icon_foreground: "assets/fixa.png"
+
+  # Remove alpha channel for iOS
+  remove_alpha_ios: true
+
+  # Web support
+  web:
+    generate: true
+    image_path: "assets/fixa.png"
+    background_color: "#FFFFFF"
+    theme_color: "#1D9E75"
+
+  # Windows support
+  windows:
+    generate: true
+    image_path: "assets/fixa.png"
+    icon_size: 48
+
+  # macOS support
+  macos:
+    generate: true
+    image_path: "assets/fixa.png"

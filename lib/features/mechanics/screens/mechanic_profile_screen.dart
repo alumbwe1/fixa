@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:iconly/iconly.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/dummy_data.dart';
@@ -22,7 +23,7 @@ class MechanicProfileScreen extends StatelessWidget {
     );
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Colors.white,
       body: CustomScrollView(
         slivers: <Widget>[
           _buildHero(context, m),
@@ -98,18 +99,15 @@ class MechanicProfileScreen extends StatelessWidget {
                       child: FixaOutlinedButton(
                         label: 'Message',
                         icon: Icons.chat_bubble_outline_rounded,
-                        onPressed: () => Helpers.showSnack(
-                          context,
-                          'Chat — coming soon',
-                        ),
+                        onPressed: () =>
+                            Helpers.showSnack(context, 'Chat — coming soon'),
                       ),
                     ),
                     const SizedBox(width: 10),
                     Expanded(
                       child: PrimaryButton(
                         label: 'Request Now',
-                        onPressed: () =>
-                            context.push('/request/${m['id']}'),
+                        onPressed: () => context.push('/request/${m['id']}'),
                       ),
                     ),
                   ],
@@ -159,10 +157,7 @@ class MechanicProfileScreen extends StatelessWidget {
             shape: const CircleBorder(),
             child: InkWell(
               customBorder: const CircleBorder(),
-              onTap: () => Helpers.showSnack(
-                context,
-                'Added to favourites',
-              ),
+              onTap: () => Helpers.showSnack(context, 'Added to favourites'),
               child: const Padding(
                 padding: EdgeInsets.all(8),
                 child: Icon(
@@ -184,9 +179,8 @@ class MechanicProfileScreen extends StatelessWidget {
               CachedNetworkImage(
                 imageUrl: image,
                 fit: BoxFit.cover,
-                errorWidget:
-                    (BuildContext context, String url, Object error) =>
-                        Container(color: AppColors.dark),
+                errorWidget: (BuildContext context, String url, Object error) =>
+                    Container(color: AppColors.dark),
               )
             else
               Container(color: AppColors.dark),
@@ -209,15 +203,16 @@ class MechanicProfileScreen extends StatelessWidget {
   }
 
   Widget _buildIdentity(Map<String, dynamic> m) {
-    final Color statusBg =
-        Helpers.statusColor(m['status'] as String).withValues(alpha: 0.12);
+    final Color statusBg = Helpers.statusColor(
+      m['status'] as String,
+    ).withValues(alpha: 0.12);
     final Color statusFg = Helpers.statusColor(m['status'] as String);
 
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(12),
         boxShadow: <BoxShadow>[
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -289,18 +284,14 @@ class MechanicProfileScreen extends StatelessWidget {
           Row(
             children: <Widget>[
               const Icon(
-                Icons.place_outlined,
+                IconlyLight.location,
                 size: 16,
                 color: AppColors.textSecondary,
               ),
               const SizedBox(width: 4),
               Text(
                 '${m['distance']} • ${m['eta']}',
-                style: appStyle(
-                  12,
-                  AppColors.textSecondary,
-                  FontWeight.w500,
-                ),
+                style: appStyle(12, AppColors.textSecondary, FontWeight.w500),
               ),
               const Spacer(),
               const Icon(
@@ -311,20 +302,12 @@ class MechanicProfileScreen extends StatelessWidget {
               const SizedBox(width: 2),
               Text(
                 (m['rating'] as num).toStringAsFixed(1),
-                style: appStyle(
-                  13,
-                  AppColors.textPrimary,
-                  FontWeight.w600,
-                ),
+                style: appStyle(13, AppColors.textPrimary, FontWeight.w600),
               ),
               const SizedBox(width: 4),
               Text(
                 '(${m['jobs']} jobs)',
-                style: appStyle(
-                  12,
-                  AppColors.textSecondary,
-                  FontWeight.w400,
-                ),
+                style: appStyle(12, AppColors.textSecondary, FontWeight.w400),
               ),
             ],
           ),
@@ -373,18 +356,17 @@ class MechanicProfileScreen extends StatelessWidget {
         .map((String s) => s.trim())
         .where((String s) => s.isNotEmpty)
         .toList();
-    final List<String> tags =
-        parts.isEmpty ? <String>[specialization] : parts;
+    final List<String> tags = parts.isEmpty ? <String>[specialization] : parts;
     return tags
         .map(
           (String label) => Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
               color: AppColors.primaryLight,
               borderRadius: BorderRadius.circular(20),
-              border:
-                  Border.all(color: AppColors.primary.withValues(alpha: 0.4)),
+              border: Border.all(
+                color: AppColors.primary.withValues(alpha: 0.4),
+              ),
             ),
             child: Text(
               label,
@@ -494,11 +476,7 @@ class _PriceRow extends StatelessWidget {
           Expanded(
             child: Text(
               label,
-              style: appStyle(
-                13,
-                AppColors.textSecondary,
-                FontWeight.w400,
-              ),
+              style: appStyle(13, AppColors.textSecondary, FontWeight.w400),
             ),
           ),
           Text(
@@ -512,11 +490,7 @@ class _PriceRow extends StatelessWidget {
 }
 
 class _Review extends StatelessWidget {
-  const _Review({
-    required this.name,
-    required this.rating,
-    required this.text,
-  });
+  const _Review({required this.name, required this.rating, required this.text});
 
   final String name;
   final int rating;
@@ -537,19 +511,14 @@ class _Review extends StatelessWidget {
             children: <Widget>[
               Text(
                 name,
-                style: appStyle(
-                  13,
-                  AppColors.textPrimary,
-                  FontWeight.w600,
-                ),
+                style: appStyle(13, AppColors.textPrimary, FontWeight.w600),
               ),
               const Spacer(),
               for (int i = 0; i < 5; i++)
                 Icon(
                   Icons.star_rounded,
                   size: 14,
-                  color:
-                      i < rating ? AppColors.primary : AppColors.divider,
+                  color: i < rating ? AppColors.primary : AppColors.divider,
                 ),
             ],
           ),

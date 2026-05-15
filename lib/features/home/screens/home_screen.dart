@@ -189,7 +189,7 @@ class _HomeScreenState extends State<HomeScreen>
         crossAxisCount: 2,
         mainAxisSpacing: 12,
         crossAxisSpacing: 12,
-        childAspectRatio: 1.25,
+        childAspectRatio: 1.1,
       ),
       itemBuilder: (BuildContext context, int index) {
         final Map<String, dynamic> service = DummyData.services[index];
