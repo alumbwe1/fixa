@@ -32,8 +32,12 @@ class AppStrings {
 
   // Map
   static const String mapTitle = 'Map';
+  // Top-down stylised street-grid view that reads like an in-app map.
   static const String mapImage =
-      'https://images.unsplash.com/photo-1524661135-423995f22d0b?w=800';
+      'https://images.unsplash.com/photo-1569336415962-a4bd9f69cd83?w=1200&q=80';
+  // Fallback URL — used by CachedNetworkImage if the primary fails.
+  static const String mapImageFallback =
+      'https://images.unsplash.com/photo-1524661135-423995f22d0b?w=1200&q=80';
 
   // Mechanics
   static const String mechanicsTitle = 'Nearby Mechanics';

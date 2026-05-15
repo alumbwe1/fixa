@@ -35,44 +35,44 @@ class _MapScreenState extends State<MapScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Bottom nav is intentionally hidden on the map screen so the
-      // map can fill the viewport edge to edge.
+      // Bottom nav is intentionally hidden so the map fills edge to edge.
+      // We also skip SafeArea on the body so the image extends under the
+      // status bar and gesture/nav area — only the top action row uses
+      // SafeArea to stay tappable.
       backgroundColor: AppColors.background,
-      body: SafeArea(
-        bottom: false,
-        child: Stack(
-          children: <Widget>[
-            // Tapping the map background dismisses the bottom sheet.
-            Positioned.fill(
-              child: GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: () => setState(() => _selectedId = null),
-                child: _buildMapImage(),
-              ),
+      extendBodyBehindAppBar: true,
+      body: Stack(
+        children: <Widget>[
+          // Tapping the map background dismisses the bottom sheet.
+          Positioned.fill(
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () => setState(() => _selectedId = null),
+              child: _buildMapImage(),
             ),
-            _buildPins(context),
-            _buildUserPin(),
-            _buildTopBar(context),
-            // Only render the bottom sheet when a pin is selected.
-            AnimatedSwitcher(
-              duration: const Duration(milliseconds: 220),
-              switchInCurve: Curves.easeOutCubic,
-              switchOutCurve: Curves.easeIn,
-              transitionBuilder: (Widget child, Animation<double> anim) {
-                return SlideTransition(
-                  position: Tween<Offset>(
-                    begin: const Offset(0, 1),
-                    end: Offset.zero,
-                  ).animate(anim),
-                  child: FadeTransition(opacity: anim, child: child),
-                );
-              },
-              child: _selectedMechanic == null
-                  ? const SizedBox.shrink()
-                  : _buildBottomSheet(context, _selectedMechanic!),
-            ),
-          ],
-        ),
+          ),
+          _buildPins(context),
+          _buildUserPin(),
+          SafeArea(bottom: false, child: _buildTopBar(context)),
+          // Only render the bottom sheet when a pin is selected.
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 220),
+            switchInCurve: Curves.easeOutCubic,
+            switchOutCurve: Curves.easeIn,
+            transitionBuilder: (Widget child, Animation<double> anim) {
+              return SlideTransition(
+                position: Tween<Offset>(
+                  begin: const Offset(0, 1),
+                  end: Offset.zero,
+                ).animate(anim),
+                child: FadeTransition(opacity: anim, child: child),
+              );
+            },
+            child: _selectedMechanic == null
+                ? const SizedBox.shrink()
+                : _buildBottomSheet(context, _selectedMechanic!),
+          ),
+        ],
       ),
     );
   }
@@ -83,19 +83,30 @@ class _MapScreenState extends State<MapScreen> {
       fit: BoxFit.cover,
       width: double.infinity,
       height: double.infinity,
-      placeholder: (BuildContext context, String url) => const Center(
-        child: FixaLoadingIndicator(size: FixaLoadingSize.medium),
+      placeholder: (BuildContext context, String url) => const ColoredBox(
+        color: AppColors.background,
+        child: Center(
+          child: FixaLoadingIndicator(size: FixaLoadingSize.medium),
+        ),
       ),
+      // If the primary URL fails, try the fallback before giving up.
       errorWidget: (BuildContext context, String url, Object error) =>
-          Container(
-            color: AppColors.background,
-            alignment: Alignment.center,
-            child: const Icon(
-              Icons.map_outlined,
-              size: 80,
-              color: AppColors.textSecondary,
-            ),
+          CachedNetworkImage(
+        imageUrl: AppStrings.mapImageFallback,
+        fit: BoxFit.cover,
+        width: double.infinity,
+        height: double.infinity,
+        errorWidget:
+            (BuildContext context, String url, Object error) => Container(
+          color: AppColors.background,
+          alignment: Alignment.center,
+          child: const Icon(
+            Icons.map_outlined,
+            size: 80,
+            color: AppColors.textSecondary,
           ),
+        ),
+      ),
     );
   }
 
@@ -110,8 +121,10 @@ class _MapScreenState extends State<MapScreen> {
             final double top = (pin['top'] as double) * constraints.maxHeight;
             final bool isSelected = id == _selectedId;
             return Positioned(
-              left: left - 22,
-              top: top - 22,
+              // Pin is centred in an 80x80 bounding box (so the pulsing
+              // ring has room to breathe). Offset by half of that.
+              left: left - 40,
+              top: top - 40,
               child: GestureDetector(
                 onTap: () => setState(() {
                   // Tap same pin twice = deselect (hide sheet).
@@ -336,39 +349,111 @@ class _SheetAvatar extends StatelessWidget {
   }
 }
 
-class _MapPin extends StatelessWidget {
+class _MapPin extends StatefulWidget {
   const _MapPin({required this.type, required this.selected});
 
   final String type;
   final bool selected;
 
   @override
+  State<_MapPin> createState() => _MapPinState();
+}
+
+class _MapPinState extends State<_MapPin> with TickerProviderStateMixin {
+  late final AnimationController _pulse;
+
+  @override
+  void initState() {
+    super.initState();
+    _pulse = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1600),
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _pulse.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final bool isGarage = type == 'garage';
+    final bool isGarage = widget.type == 'garage';
     final Color color = isGarage ? AppColors.success : AppColors.primary;
+    // Gear icon for mechanic pins, building for garages.
     final IconData icon = isGarage
         ? Icons.store_mall_directory_outlined
-        : Icons.build_rounded;
-    final double size = selected ? 48 : 40;
+        : Icons.settings_rounded;
+    final double size = widget.selected ? 50 : 40;
 
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 200),
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        color: color,
-        shape: BoxShape.circle,
-        border: Border.all(color: Colors.white, width: 3),
-        boxShadow: <BoxShadow>[
-          BoxShadow(
-            color: color.withValues(alpha: 0.4),
-            blurRadius: selected ? 16 : 8,
-            spreadRadius: selected ? 2 : 0,
+    return SizedBox(
+      width: 80,
+      height: 80,
+      child: Stack(
+        alignment: Alignment.center,
+        children: <Widget>[
+          // Animated ripple — only rendered when the pin is selected.
+          if (widget.selected)
+            AnimatedBuilder(
+              animation: _pulse,
+              builder: (BuildContext context, Widget? child) {
+                final double t = _pulse.value;
+                final double ringSize = 40 + (40 * t);
+                return Opacity(
+                  opacity: (1 - t).clamp(0.0, 1.0),
+                  child: Container(
+                    width: ringSize,
+                    height: ringSize,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: color.withValues(alpha: 0.18),
+                      border: Border.all(
+                        color: color.withValues(alpha: 0.45),
+                        width: 2,
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          // Soft static glow under the pin.
+          if (widget.selected)
+            Container(
+              width: 64,
+              height: 64,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: color.withValues(alpha: 0.18),
+              ),
+            ),
+          // The pin itself.
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            width: size,
+            height: size,
+            decoration: BoxDecoration(
+              color: color,
+              shape: BoxShape.circle,
+              border: Border.all(color: Colors.white, width: 3),
+              boxShadow: <BoxShadow>[
+                BoxShadow(
+                  color: color.withValues(alpha: 0.45),
+                  blurRadius: widget.selected ? 18 : 10,
+                  spreadRadius: widget.selected ? 1 : 0,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            alignment: Alignment.center,
+            child: Icon(
+              icon,
+              color: Colors.white,
+              size: widget.selected ? 24 : 20,
+            ),
           ),
         ],
       ),
-      alignment: Alignment.center,
-      child: Icon(icon, color: Colors.white, size: selected ? 22 : 18),
     );
   }
 }
