@@ -13,6 +13,7 @@ class FixaApp extends StatelessWidget {
       title: 'FIXA',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
+
       routerConfig: AppRouter.router,
     );
   }

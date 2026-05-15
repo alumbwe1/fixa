@@ -25,7 +25,7 @@ class FixaOutlinedButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final ButtonStyle style = OutlinedButton.styleFrom(
       foregroundColor: color,
-      side: BorderSide(color: color.withValues(alpha: 0.3), width: 1),
+      side: BorderSide(color: color.withValues(alpha: 0.3), width: 0.7),
       padding: const EdgeInsets.symmetric(vertical: 16),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
       minimumSize: fullWidth ? const Size.fromHeight(54) : null,

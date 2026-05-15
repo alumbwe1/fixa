@@ -42,6 +42,38 @@ class _NearbyMechanicsScreenState extends State<NearbyMechanicsScreen> {
     });
   }
 
+  // ── Counts ──────────────────────────────────────────────────────────────────
+
+  int _countFor(String filter) {
+    switch (filter) {
+      case AppStrings.filterAll:
+        return DummyData.mechanics.length;
+      case AppStrings.filterAvailable:
+        return DummyData.mechanics
+            .where(
+              (Map<String, dynamic> m) =>
+                  (m['status'] as String) == 'available',
+            )
+            .length;
+      case AppStrings.filterGarages:
+        return DummyData.mechanics
+            .where(
+              (Map<String, dynamic> m) => (m['type'] as String) == 'garage',
+            )
+            .length;
+      case AppStrings.filterTowing:
+        return DummyData.mechanics
+            .where(
+              (Map<String, dynamic> m) => (m['type'] as String) == 'towing',
+            )
+            .length;
+      default:
+        return 0;
+    }
+  }
+
+  // ── Filtering ────────────────────────────────────────────────────────────────
+
   List<Map<String, dynamic>> get _filtered {
     Iterable<Map<String, dynamic>> list = DummyData.mechanics;
     switch (_filter) {
@@ -71,6 +103,8 @@ class _NearbyMechanicsScreenState extends State<NearbyMechanicsScreen> {
     return list.toList();
   }
 
+  // ── Build ────────────────────────────────────────────────────────────────────
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -78,6 +112,7 @@ class _NearbyMechanicsScreenState extends State<NearbyMechanicsScreen> {
       appBar: const FixaAppBar(title: AppStrings.mechanicsTitle),
       body: Column(
         children: <Widget>[
+          // Search field
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
             child: CustomTextField(
@@ -86,38 +121,90 @@ class _NearbyMechanicsScreenState extends State<NearbyMechanicsScreen> {
               onChanged: (String v) => setState(() => _query = v),
             ),
           ),
+
+          // Filter chips
           SizedBox(
-            height: 40,
+            height: 38,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 20),
               itemCount: _filters.length,
-              separatorBuilder: (_, _) => const SizedBox(width: 8),
+              separatorBuilder: (_, __) => const SizedBox(width: 8),
               itemBuilder: (BuildContext context, int index) {
                 final String f = _filters[index];
                 final bool active = _filter == f;
-                return ChoiceChip(
-                  label: Text(f),
-                  selected: active,
-                  onSelected: (_) => setState(() => _filter = f),
-                  backgroundColor: AppColors.surface,
-                  selectedColor: AppColors.dark,
-                  side: BorderSide(
-                    color: active ? AppColors.dark : AppColors.divider,
-                  ),
-                  labelStyle: appStyle(
-                    12,
-                    active ? Colors.white : AppColors.textPrimary,
-                    FontWeight.w500,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
+                final int count = _countFor(f);
+
+                return GestureDetector(
+                  onTap: () => setState(() => _filter = f),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    curve: Curves.easeInOut,
+                    padding: const EdgeInsets.symmetric(horizontal: 14),
+                    decoration: BoxDecoration(
+                      color: active ? AppColors.dark : AppColors.surface,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: active ? AppColors.dark : AppColors.divider,
+                        width: 1.2,
+                      ),
+                      boxShadow: active
+                          ? <BoxShadow>[
+                              BoxShadow(
+                                color: AppColors.dark.withValues(alpha: 0.18),
+                                blurRadius: 8,
+                                offset: const Offset(0, 3),
+                              ),
+                            ]
+                          : const <BoxShadow>[],
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        // Label
+                        Text(
+                          f,
+                          style: appStyle(
+                            12,
+                            active ? Colors.white : AppColors.textPrimary,
+                            FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(width: 7),
+                        // Count badge
+                        AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          curve: Curves.easeInOut,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 7,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: active
+                                ? Colors.white.withValues(alpha: 0.18)
+                                : AppColors.primary.withValues(alpha: 0.10),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Text(
+                            '$count',
+                            style: appStyle(
+                              11,
+                              active ? Colors.white : AppColors.primary,
+                              FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 );
               },
             ),
           ),
+
           const SizedBox(height: 8),
+
+          // Body
           Expanded(
             child: _loading
                 ? _buildShimmerList()
@@ -130,12 +217,14 @@ class _NearbyMechanicsScreenState extends State<NearbyMechanicsScreen> {
     );
   }
 
+  // ── List ─────────────────────────────────────────────────────────────────────
+
   Widget _buildList() {
     final List<Map<String, dynamic>> items = _filtered;
     return ListView.separated(
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
       itemCount: items.length,
-      separatorBuilder: (_, _) => const SizedBox(height: 12),
+      separatorBuilder: (_, __) => const SizedBox(height: 12),
       itemBuilder: (BuildContext context, int index) {
         final Map<String, dynamic> m = items[index];
         return TweenAnimationBuilder<double>(
@@ -161,11 +250,13 @@ class _NearbyMechanicsScreenState extends State<NearbyMechanicsScreen> {
     );
   }
 
+  // ── Shimmer ──────────────────────────────────────────────────────────────────
+
   Widget _buildShimmerList() {
     return ListView.separated(
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
       itemCount: 5,
-      separatorBuilder: (_, _) => const SizedBox(height: 12),
+      separatorBuilder: (_, __) => const SizedBox(height: 12),
       itemBuilder: (BuildContext context, int index) {
         return Shimmer.fromColors(
           baseColor: AppColors.shimmerBase,
@@ -181,6 +272,8 @@ class _NearbyMechanicsScreenState extends State<NearbyMechanicsScreen> {
       },
     );
   }
+
+  // ── Empty ────────────────────────────────────────────────────────────────────
 
   Widget _buildEmpty() {
     return Center(

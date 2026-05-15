@@ -38,4 +38,8 @@ flutter:
     - assets/tire.png
     - assets/service.png
     - assets/avatar.png
+    - assets/map.jpeg
+    - assets/spanner.png
+    - assets/car-repair.png
+    - assets/google.png
     - assets/svgs/google.svg

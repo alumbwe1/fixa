@@ -11,7 +11,6 @@ import '../../../core/utils/app_style.dart';
 import '../../../core/utils/helpers.dart';
 import '../../../widgets/buttons/outlined_button.dart';
 import '../../../widgets/buttons/primary_button.dart';
-import '../../../widgets/loading/custom_loading_indicator.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -78,26 +77,14 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   Widget _buildMapImage() {
-    return CachedNetworkImage(
-      imageUrl: AppStrings.mapImage,
+    // Local map asset — covers the whole screen at any aspect ratio.
+    return Image.asset(
+      'assets/map.jpeg',
       fit: BoxFit.cover,
       width: double.infinity,
       height: double.infinity,
-      placeholder: (BuildContext context, String url) => const ColoredBox(
-        color: AppColors.background,
-        child: Center(
-          child: FixaLoadingIndicator(size: FixaLoadingSize.medium),
-        ),
-      ),
-      // If the primary URL fails, try the fallback before giving up.
-      errorWidget: (BuildContext context, String url, Object error) =>
-          CachedNetworkImage(
-        imageUrl: AppStrings.mapImageFallback,
-        fit: BoxFit.cover,
-        width: double.infinity,
-        height: double.infinity,
-        errorWidget:
-            (BuildContext context, String url, Object error) => Container(
+      errorBuilder: (BuildContext context, Object error, StackTrace? stack) {
+        return Container(
           color: AppColors.background,
           alignment: Alignment.center,
           child: const Icon(
@@ -105,8 +92,8 @@ class _MapScreenState extends State<MapScreen> {
             size: 80,
             color: AppColors.textSecondary,
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
@@ -381,11 +368,14 @@ class _MapPinState extends State<_MapPin> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     final bool isGarage = widget.type == 'garage';
     final Color color = isGarage ? AppColors.success : AppColors.primary;
-    // Gear icon for mechanic pins, building for garages.
-    final IconData icon = isGarage
-        ? Icons.store_mall_directory_outlined
-        : Icons.settings_rounded;
-    final double size = widget.selected ? 50 : 40;
+    // Spanner (wrench) for individual mechanics, gear for garages —
+    // the wrench/gear distinction matches how vehicle owners think
+    // about "a mechanic on call" vs "a workshop bay".
+    final String iconAsset = isGarage
+        ? 'assets/gear.png'
+        : 'assets/spanner.png';
+    final double size = widget.selected ? 52 : 42;
+    final double iconSize = widget.selected ? 26 : 20;
 
     return SizedBox(
       width: 80,
@@ -427,13 +417,13 @@ class _MapPinState extends State<_MapPin> with TickerProviderStateMixin {
                 color: color.withValues(alpha: 0.18),
               ),
             ),
-          // The pin itself.
+          // The pin itself — colored disc with the gear asset inside.
           AnimatedContainer(
             duration: const Duration(milliseconds: 200),
             width: size,
             height: size,
             decoration: BoxDecoration(
-              color: color,
+              color: Colors.white,
               shape: BoxShape.circle,
               border: Border.all(color: Colors.white, width: 3),
               boxShadow: <BoxShadow>[
@@ -446,10 +436,25 @@ class _MapPinState extends State<_MapPin> with TickerProviderStateMixin {
               ],
             ),
             alignment: Alignment.center,
-            child: Icon(
-              icon,
-              color: Colors.white,
-              size: widget.selected ? 24 : 20,
+            child: Image.asset(
+              iconAsset,
+              width: iconSize,
+              height: iconSize,
+              fit: BoxFit.contain,
+
+              // Force a white tint regardless of the source asset colour
+              // so the icon reads cleanly against the coloured disc.
+              colorBlendMode: BlendMode.srcIn,
+              errorBuilder:
+                  (BuildContext context, Object error, StackTrace? stack) {
+                    return Icon(
+                      isGarage
+                          ? Icons.store_mall_directory_outlined
+                          : Icons.settings_rounded,
+                      color: Colors.white,
+                      size: iconSize,
+                    );
+                  },
             ),
           ),
         ],

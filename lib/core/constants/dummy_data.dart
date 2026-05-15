@@ -12,7 +12,7 @@ class DummyData {
       'rating': 4.8,
       'jobs': 124,
       'distance': '1.2 km',
-      'eta': '~10 min',
+      'eta': '10 min',
       'rate': 'K150/hr',
       'status': 'available',
       'initials': 'JM',
@@ -28,7 +28,7 @@ class DummyData {
       'rating': 4.6,
       'jobs': 89,
       'distance': '2.8 km',
-      'eta': '~25 min',
+      'eta': '25 min',
       'rate': 'K120/hr',
       'status': 'busy',
       'initials': 'PK',
@@ -44,7 +44,7 @@ class DummyData {
       'rating': 4.9,
       'jobs': 312,
       'distance': '1.8 km',
-      'eta': '~15 min',
+      'eta': '15 min',
       'rate': 'K200/hr',
       'status': 'available',
       'initials': 'AG',
@@ -60,7 +60,7 @@ class DummyData {
       'rating': 4.5,
       'jobs': 67,
       'distance': '3.5 km',
-      'eta': '~30 min',
+      'eta': '30 min',
       'rate': 'K180/hr',
       'status': 'available',
       'initials': 'CB',
@@ -76,7 +76,7 @@ class DummyData {
       'rating': 4.7,
       'jobs': 445,
       'distance': '4.1 km',
-      'eta': '~35 min',
+      'eta': '35 min',
       'rate': 'K250/hr',
       'status': 'available',
       'initials': 'RR',
@@ -98,7 +98,7 @@ class DummyData {
     },
     <String, dynamic>{
       'title': 'Find Garage',
-      'asset': 'assets/service.png',
+      'asset': 'assets/spanner.png',
       'bgColor': 0xFFE3F2FD,
       'highlighted': false,
       'key': 'garage',
@@ -120,8 +120,7 @@ class DummyData {
   ];
 
   /// Issue types in the request screen.
-  static const List<Map<String, dynamic>> issueTypes =
-      <Map<String, dynamic>>[
+  static const List<Map<String, dynamic>> issueTypes = <Map<String, dynamic>>[
     <String, dynamic>{'label': 'Engine Problem', 'iconCode': 0xe1b8},
     <String, dynamic>{'label': 'Battery Dead', 'iconCode': 0xe1a3},
     <String, dynamic>{'label': 'Flat Tyre', 'iconCode': 0xe531},
@@ -140,10 +139,25 @@ class DummyData {
   /// Map pins drawn on top of the mock map image. Positions are
   /// normalized (0.0 - 1.0) relative to the map image size.
   static const List<Map<String, dynamic>> mapPins = <Map<String, dynamic>>[
-    <String, dynamic>{'id': 'm1', 'left': 0.18, 'top': 0.32, 'type': 'mechanic'},
-    <String, dynamic>{'id': 'm2', 'left': 0.62, 'top': 0.22, 'type': 'mechanic'},
+    <String, dynamic>{
+      'id': 'm1',
+      'left': 0.18,
+      'top': 0.32,
+      'type': 'mechanic',
+    },
+    <String, dynamic>{
+      'id': 'm2',
+      'left': 0.62,
+      'top': 0.22,
+      'type': 'mechanic',
+    },
     <String, dynamic>{'id': 'm3', 'left': 0.45, 'top': 0.55, 'type': 'garage'},
-    <String, dynamic>{'id': 'm4', 'left': 0.78, 'top': 0.68, 'type': 'mechanic'},
+    <String, dynamic>{
+      'id': 'm4',
+      'left': 0.78,
+      'top': 0.68,
+      'type': 'mechanic',
+    },
     <String, dynamic>{'id': 'm5', 'left': 0.25, 'top': 0.72, 'type': 'garage'},
   ];
 
